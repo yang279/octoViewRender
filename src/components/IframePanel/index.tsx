@@ -1,81 +1,6 @@
 import { defineComponent, ref, watch, toRaw } from 'vue'
 import { usePreviewStore } from '@/stores/preview'
 
-function buildPluginCode(hex: string, resourceMap: Record<string, string | Uint8Array>): string {
-  const entries: string[] = []
-  for (const [key, value] of Object.entries(resourceMap)) {
-    const ek = JSON.stringify(key)
-    if (typeof value === 'string') {
-      entries.push(`${ek}:${JSON.stringify(value)}`)
-    } else {
-      const raw = toRaw(value) as Uint8Array
-      const arr = Array.from(raw)
-      entries.push(`${ek}:{__t:"u8",__d:[${arr.join(',')}]}`)
-    }
-  }
-  const mapLiteral = `{\n${entries.join(',\n')}\n}`
-  const hexLiteral = JSON.stringify(hex)
-
-  return `
-(async () => {
-  try {
-    const hex = ${hexLiteral};
-    const _raw = ${mapLiteral};
-    const resourceMap = {};
-    for (const [k, v] of Object.entries(_raw)) {
-      if (v && v.__t === "u8") {
-        resourceMap[k] = new Uint8Array(v.__d);
-      } else {
-        resourceMap[k] = v;
-      }
-    }
-
-    const children = pixso.currentPage.children;
-    const lastlayer = children[children.length - 1];
-    const page = await pixso.getNodeById(lastlayer.id);
-
-    const getPluginData = (node) => {
-      return node.getPluginData;
-    };
-
-    const setPlaceholderSvg = async (node) => {
-      try {
-        const { note, instanceGuid, textNodeGuid, textContent } = getPluginData(node);
-        if (note && resourceMap[note]) {
-          pixso.createSvg(node.id, resourceMap[note]);
-          const result = await pixso.aiEditor.call("apply", {
-            operations: \`frame = U("\${instanceGuid}", { 
-            "descendants": {
-                "\${textNodeGuid}": {
-                    "nodeText": "\${textContent}"
-                    }
-                } 
-            })\`
-          });
-        }
-      } catch (error) {
-        console.log(error, 'setPlaceholderSvg error');
-      }
-    };
-
-    const dascandants = await page.findAllAsync();
-    const _loop = async (list) => {
-      for (let i = 0; i < list.length; i++) {
-        const node = list[i];
-        await setPlaceholderSvg(node);
-        if (node.children && node.children.length) {
-          await _loop(node.children);
-        }
-      }
-    };
-    await _loop(dascandants);
-  } catch (error) {
-    console.log(error);
-  }
-})();
-`
-}
-
 export default defineComponent({
   name: 'IframePanel',
   setup() {
@@ -130,11 +55,10 @@ export default defineComponent({
         rawMap[k] = typeof v === 'string' ? v : (toRaw(v) as Uint8Array)
       }
 
-      const code = buildPluginCode(hex, rawMap)
-      console.info(`[Plugin] Executing plugin, hex: ${hex.length} chars, svgs: ${Object.keys(svgs).join(',')}`)
+      console.info(`[Plugin] Passing data to iframe, hex: ${hex.length} chars, svgs: ${Object.keys(svgs).join(',')}`)
 
       try {
-        fsEvent.insert(code)
+        fsEvent.insert({ hex, resourceMap: rawMap })
         console.info('[Plugin] Execution completed')
       } catch (err) {
         console.error(`[Plugin] Execution failed: ${(err as Error).message}`)
