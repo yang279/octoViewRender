@@ -1,0 +1,23 @@
+@import "tailwindcss";
+
+.vditor-toolbar {
+  display: none !important;
+}
+
+.vditor {
+  border: none !important;
+  border-radius: 0 !important;
+}
+
+.vditor-ir {
+  border: none !important;
+  box-shadow: none !important;
+}
+
+.vditor-reset {
+  font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
+  font-size: 15px;
+  line-height: 1.7;
+  color: #333;
+  padding: 20px 16px !important;
+}

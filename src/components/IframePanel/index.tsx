@@ -1,0 +1,216 @@
+import { defineComponent, ref, watch, toRaw } from 'vue'
+import { usePreviewStore } from '@/stores/preview'
+
+function buildPluginCode(hex: string, resourceMap: Record<string, string | Uint8Array>): string {
+  const entries: string[] = []
+  for (const [key, value] of Object.entries(resourceMap)) {
+    const ek = JSON.stringify(key)
+    if (typeof value === 'string') {
+      entries.push(`${ek}:${JSON.stringify(value)}`)
+    } else {
+      const raw = toRaw(value) as Uint8Array
+      const arr = Array.from(raw)
+      entries.push(`${ek}:{__t:"u8",__d:[${arr.join(',')}]}`)
+    }
+  }
+  const mapLiteral = `{\n${entries.join(',\n')}\n}`
+  const hexLiteral = JSON.stringify(hex)
+
+  return `
+(async () => {
+  try {
+    const hex = ${hexLiteral};
+    const _raw = ${mapLiteral};
+    const resourceMap = {};
+    for (const [k, v] of Object.entries(_raw)) {
+      if (v && v.__t === "u8") {
+        resourceMap[k] = new Uint8Array(v.__d);
+      } else {
+        resourceMap[k] = v;
+      }
+    }
+
+    const children = pixso.currentPage.children;
+    const lastlayer = children[children.length - 1];
+    const page = await pixso.getNodeById(lastlayer.id);
+
+    const getPluginData = (node) => {
+      return node.getPluginData;
+    };
+
+    const setPlaceholderSvg = async (node) => {
+      try {
+        const { note, instanceGuid, textNodeGuid, textContent } = getPluginData(node);
+        if (note && resourceMap[note]) {
+          pixso.createSvg(node.id, resourceMap[note]);
+          const result = await pixso.aiEditor.call("apply", {
+            operations: \`frame = U("\${instanceGuid}", { 
+            "descendants": {
+                "\${textNodeGuid}": {
+                    "nodeText": "\${textContent}"
+                    }
+                } 
+            })\`
+          });
+        }
+      } catch (error) {
+        console.log(error, 'setPlaceholderSvg error');
+      }
+    };
+
+    const dascandants = await page.findAllAsync();
+    const _loop = async (list) => {
+      for (let i = 0; i < list.length; i++) {
+        const node = list[i];
+        await setPlaceholderSvg(node);
+        if (node.children && node.children.length) {
+          await _loop(node.children);
+        }
+      }
+    };
+    await _loop(dascandants);
+  } catch (error) {
+    console.log(error);
+  }
+})();
+`
+}
+
+export default defineComponent({
+  name: 'IframePanel',
+  setup() {
+    const previewStore = usePreviewStore()
+
+    const iframeSrc   = ref('')
+    const loading     = ref(false)
+    const iframeRef   = ref<HTMLIFrameElement | null>(null)
+    const iframeReady = ref(false)
+
+    watch(() => previewStore.src, (src) => {
+      if (src) {
+        iframeSrc.value = src
+        loading.value = true
+      }
+    }, { immediate: true })
+
+    watch(() => previewStore.version, () => {
+      if (!previewStore.hexData) return
+      try {
+        const iframe = iframeRef.value
+        if (!iframe || !iframeReady.value) return
+        const fsEvent = (iframe.contentWindow as any)?.__fullsecreenEvent__
+        if (!fsEvent) {
+          console.warn('[Plugin] ZIP loaded but __fullsecreenEvent__ not found yet')
+          return
+        }
+        console.info('[Plugin] ZIP loaded, iframe ready, auto-running plugin')
+        runPlugin()
+      } catch (err) {
+        console.warn(`[Plugin] Access iframe failed: ${(err as Error).message}`)
+      }
+    })
+
+    async function runPlugin() {
+      const iframe = iframeRef.value
+      if (!iframe) { console.warn('[Plugin] No iframe found'); return }
+      if (!iframeReady.value) { console.warn('[Plugin] iframe not loaded yet'); return }
+
+      const fsEvent = (iframe.contentWindow as any)?.__fullsecreenEvent__
+      if (!fsEvent) { console.warn('[Plugin] __fullsecreenEvent__ not found on iframe window'); return }
+
+      const hex = previewStore.hexData
+      const svgs = previewStore.resourceMap
+      if (!hex && !Object.keys(svgs).length) {
+        console.warn('[Plugin] No hex/svg data available')
+        return
+      }
+
+      const rawMap: Record<string, string | Uint8Array> = {}
+      for (const [k, v] of Object.entries(svgs)) {
+        rawMap[k] = typeof v === 'string' ? v : (toRaw(v) as Uint8Array)
+      }
+
+      const code = buildPluginCode(hex, rawMap)
+      console.info(`[Plugin] Executing plugin, hex: ${hex.length} chars, svgs: ${Object.keys(svgs).join(',')}`)
+
+      try {
+        fsEvent.insert(code)
+        console.info('[Plugin] Execution completed')
+      } catch (err) {
+        console.error(`[Plugin] Execution failed: ${(err as Error).message}`)
+      }
+    }
+
+    function onIframeLoad() {
+      loading.value = false
+      iframeReady.value = true
+
+      if (!previewStore.hexData && !Object.keys(previewStore.resourceMap).length) return
+
+      const iframe = iframeRef.value
+      if (!iframe) return
+
+      const fsEvent = (iframe.contentWindow as any)?.__fullsecreenEvent__
+      if (!fsEvent) {
+        console.warn('[Plugin] iframe loaded but __fullsecreenEvent__ not yet available')
+        return
+      }
+
+      console.info('[Plugin] __fullsecreenEvent__ detected, auto-running plugin')
+      runPlugin()
+    }
+
+    return () => (
+      <div class="flex flex-col h-full bg-white">
+        <div class="flex-1 relative min-h-0">
+          {previewStore.error && (
+            <div class="absolute top-2 inset-x-2 z-20 flex items-center gap-2 px-3 py-2 bg-red-50 border border-red-200 rounded-lg shadow-sm">
+              <svg class="w-4 h-4 text-red-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              <p class="text-sm text-red-600 font-medium break-all">{previewStore.error}</p>
+              <button
+                class="ml-auto p-1 rounded hover:bg-red-100 text-red-400 hover:text-red-600 transition-colors flex-shrink-0"
+                onClick={() => { previewStore.clearError() }}
+              >
+                <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+          )}
+          {loading.value && iframeSrc.value && (
+            <div class="absolute inset-0 flex items-center justify-center bg-white/70 z-10 pointer-events-none">
+              <div class="w-6 h-6 border-2 border-blue-400 border-t-transparent rounded-full animate-spin" />
+            </div>
+          )}
+          {!iframeSrc.value
+            ? (
+              <div class="flex-1 flex flex-col items-center justify-center gap-4 text-gray-400 select-none h-full">
+                <svg class="w-14 h-14 opacity-20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"
+                    d="M9 17V7m0 10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2m0 10a2 2 0 002 2h2a2 2 0 002-2M9 7a2 2 0 012-2h2a2 2 0 012 2m0 10V7m0 10a2 2 0 002 2h2a2 2 0 002-2V7a2 2 0 00-2-2h-2a2 2 0 00-2 2" />
+                </svg>
+                <div class="text-center">
+                  <p class="text-sm font-medium">等待预览数据…</p>
+                  <p class="text-xs mt-1 opacity-60">ro 参数 · uploadZip()</p>
+                </div>
+              </div>
+            )
+            : (
+              <iframe
+                ref={iframeRef}
+                key={iframeSrc.value}
+                src={iframeSrc.value}
+                class="absolute inset-0 w-full h-full border-0"
+                onLoad={onIframeLoad}
+                sandbox="allow-scripts allow-same-origin allow-forms allow-popups"
+              />
+            )
+          }
+        </div>
+      </div>
+    )
+  },
+})
