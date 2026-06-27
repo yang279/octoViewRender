@@ -1,9 +1,10 @@
 const BASE: Record<string, [number, number, number]> = {
-  frame:     [59,  130, 246],  // blue
-  component: [16,  185, 129],  // green
-  icon:      [139,  92, 246],  // purple
-  image:     [236,  72, 153],  // pink
-  text:      [100, 116, 139],  // slate
+  frame:     [59,  130, 246],
+  component: [16,  185, 129],
+  icon:      [139,  92, 246],
+  image:     [236,  72, 153],
+  rectangle: [234, 179, 8],
+  text:      [100, 116, 139],
 }
 
 const DEFAULT_RGB: [number, number, number] = [148, 163, 184]

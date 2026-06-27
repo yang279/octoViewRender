@@ -18,6 +18,7 @@ export default defineComponent({
         loading.value    = true
         iframeReady.value = false
         pixsoReady.value  = false
+        previewStore.pixsoReady = false
       }
     }, { immediate: true })
 
@@ -73,6 +74,7 @@ export default defineComponent({
       if (event.data?.type === '__pixso_init__') {
         console.info('[Plugin] Received __pixso_init__ from iframe')
         pixsoReady.value = true
+        previewStore.pixsoReady = true
         tryRunPlugin()
       }
     }
@@ -106,18 +108,7 @@ export default defineComponent({
             </div>
           )}
           {!iframeSrc.value
-            ? (
-              <div class="flex-1 flex flex-col items-center justify-center gap-4 text-gray-400 select-none h-full">
-                <svg class="w-14 h-14 opacity-20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"
-                    d="M9 17V7m0 10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2m0 10a2 2 0 002 2h2a2 2 0 002-2M9 7a2 2 0 012-2h2a2 2 0 012 2m0 10V7m0 10a2 2 0 002 2h2a2 2 0 002-2V7a2 2 0 00-2-2h-2a2 2 0 00-2 2" />
-                </svg>
-                <div class="text-center">
-                  <p class="text-sm font-medium">等待预览数据…</p>
-                  <p class="text-xs mt-1 opacity-60">ro 参数 · uploadZip()</p>
-                </div>
-              </div>
-            )
+            ? <div class="h-full" />
             : (
               <iframe
                 ref={iframeRef}

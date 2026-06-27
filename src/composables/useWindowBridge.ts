@@ -215,6 +215,7 @@ export function useWindowBridge() {
       console.error('[Pipeline] Failed:', err)
     } finally {
       previewStore.pipelineLoading = false
+      dslStore.isConfirmed = false
     }
   }
 

@@ -26,14 +26,13 @@
 | 方式 | 说明 | 截断风险 |
 |---|---|---|
 | URL query `ro` | `#/?step=3&ro=URL` — **`ro` 必须是最后一个参数** | 仅当 `ro` 不在末尾时有截断风险 |
-| 弹窗手动输入 | 应用启动时弹出，用户填入 URL（`ro` 为空时触发） | 无 |
 | `INIT_PREVIEW_URL` postMessage | 宿主发 `{ type: 'INIT_PREVIEW_URL', payload: { url } }` | 无（推荐） |
 
 > **重要：`ro` 必须是 URL 中最后一个 query param。** 正则 `(.+)` 从 `ro=` 贪婪匹配到字符串末尾，如果 `ro` 后面还有其他参数（如 `/#/?ro=URL&step=3`），`step` 会被吞入 `ro` 值导致错误。正确写法：`/#/?step=3&ro=URL`。
 
 > 推荐宿主仍对 `ro` 做 `encodeURIComponent`，这是最安全的做法。但即使不编码，只要 `ro` 在末尾，应用也能正确解析。
 
-> 应用启动时若 `ro` 为空，弹出不可跳过的输入弹窗。`INIT_PREVIEW_URL` postMessage 优先——收到后弹窗自动关闭。
+> `ro` 为空时整个应用显示空白页（纯白背景，无 Navbar、无面板），等待宿主通过 `INIT_PREVIEW_URL` postMessage 或 URL query `ro` 传入预览地址后才显示内容。`INIT_PREVIEW_URL` 优先——收到后空白页自动消失。
 
 > 宿主端示例：
 > ```js
@@ -87,7 +86,7 @@ iframe.src = 'http://host:port/#/?step=3&ro=ENCODED_URL'  // ro 必须在末尾
 |---|---|---|
 | 1 | 等待 Markdown 内容… | 有内容（`isEmpty=false`）或正在流式输入 |
 | 2 | 等待 DSL 数据… | DSL 数据已加载（`root !== null`） |
-| 3 | 调用 uploadZip() 加载压缩包 | ZIP 已加载或 URL 已设置 |
+| 3 | 等待预览数据… | ZIP 已加载或 `ro` URL 已设置 |
 
 ---
 

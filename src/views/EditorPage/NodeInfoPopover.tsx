@@ -92,7 +92,7 @@ export default defineComponent({
 
             <div class="px-4 py-4 flex flex-col gap-4">
               <div class="flex flex-col gap-1.5">
-                <label class="text-xs text-gray-400">layerType</label>
+                <label class="text-xs text-gray-400">Type</label>
                 <ElSelect
                   modelValue={props.node.layerType}
                   size="small"
@@ -106,7 +106,7 @@ export default defineComponent({
               </div>
 
               <div class="flex flex-col gap-1.5">
-                <label class="text-xs text-gray-400">layerName</label>
+                <label class="text-xs text-gray-400">Name</label>
                 <ElInput
                   modelValue={layerName.value}
                   size="small"
@@ -115,7 +115,7 @@ export default defineComponent({
               </div>
 
               <div class="flex flex-col gap-1.5">
-                <label class="text-xs text-gray-400">layerDescription</label>
+                <label class="text-xs text-gray-400">Description</label>
                 <ElInput
                   modelValue={layerDescription.value}
                   size="small"
