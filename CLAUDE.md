@@ -39,7 +39,7 @@ This is a **Vue 3 + JSX + TypeScript** single-page app built with Vite. The `@` 
 
 ### Step switching via query param
 
-The router (`src/router/index.ts`) has a **single route `'/'`** handled by `WorkspaceLayout`. All three step pages are always mounted and toggled with `v-show`; the active step is read from `?step=1|2|3` on the query string. Switching steps is done via `router.replace({ path: '/', query: { step: '2', ro: ... } })`. Pinia stores persist across step switches.
+The router (`src/router/index.ts`) uses **`createWebHashHistory`** with a **single route `'/'`** handled by `WorkspaceLayout` (so real URLs look like `#/?step=2&ro=...`). All three step pages are always mounted and toggled with `v-show`; the active step is read from `?step=1|2|3` on the query string (defaults to `1` when absent/out of range). Switching steps is done via `router.replace({ path: '/', query: { step: '2', ro: ... } })`. Pinia stores persist across step switches.
 
 | Query | Step | Page | Purpose |
 |---|---|---|---|
@@ -47,7 +47,7 @@ The router (`src/router/index.ts`) has a **single route `'/'`** handled by `Work
 | `?step=2` | 2 | `EditorPage` | Render DSL wireframes, click nodes to edit metadata |
 | `?step=3&ro=URL` | 3 | `PreviewPage` | iframe wrapper for loading URLs or ZIP packages |
 
-If `ro` is absent or empty when the app loads, `RoInputDialog` renders a blocking modal prompting the user to enter a preview URL. Sending `INIT_PREVIEW_URL` via postMessage closes it automatically.
+`WorkspaceLayout` reads `ro` directly from `window.location.hash` and calls `previewStore.load(ro)` whenever it changes. The host sets it by posting `INIT_PREVIEW_URL { url }`, which `useWindowBridge` turns into a `router.replace` that writes `ro` to the query string (preserving the current step).
 
 ### Data flow
 
