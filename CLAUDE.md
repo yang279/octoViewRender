@@ -37,15 +37,17 @@ npm run build   # catches TS type errors and build failures
 
 This is a **Vue 3 + JSX + TypeScript** single-page app built with Vite. The `@` alias resolves to `src/`.
 
-### Three routes / three steps
+### Step switching via query param
 
-The router (`src/router/index.ts`) uses hash history with three child routes under `WorkspaceLayout`. All three Pinia stores are shared — switching routes does not lose data.
+The router (`src/router/index.ts`) has a **single route `'/'`** handled by `WorkspaceLayout`. All three step pages are always mounted and toggled with `v-show`; the active step is read from `?step=1|2|3` on the query string. Switching steps is done via `router.replace({ path: '/', query: { step: '2', ro: ... } })`. Pinia stores persist across step switches.
 
-| Route | Step | Page | Purpose |
+| Query | Step | Page | Purpose |
 |---|---|---|---|
-| `#/markdown` | 1 | `MarkdownPage` | Vditor IR-mode markdown editor; "Confirm" button posts `MD_CONTENT_CONFIRMED` |
-| `#/editor` | 2 | `EditorPage` | Render DSL wireframes, click nodes to edit metadata |
-| `#/preview` | 3 | `PreviewPage` | iframe wrapper for loading URLs or ZIP packages |
+| `?step=1` | 1 | `MarkdownPage` | Vditor IR-mode markdown editor; "Confirm" button posts `MD_CONTENT_CONFIRMED` |
+| `?step=2` | 2 | `EditorPage` | Render DSL wireframes, click nodes to edit metadata |
+| `?step=3&ro=URL` | 3 | `PreviewPage` | iframe wrapper for loading URLs or ZIP packages |
+
+If `ro` is absent or empty when the app loads, `RoInputDialog` renders a blocking modal prompting the user to enter a preview URL. Sending `INIT_PREVIEW_URL` via postMessage closes it automatically.
 
 ### Data flow
 
@@ -70,11 +72,11 @@ The router (`src/router/index.ts`) uses hash history with three child routes und
 
 Initialized once in `App.tsx`. Full type definitions in `src/types/window.d.ts`.
 
-**DSL methods:** `uploadDsl()`, `downloadDsl()`, `clearDsl()`, `confirmDsl()`, `uploadDslToPipeline()`  
+**DSL methods:** `uploadDsl()`, `downloadDsl()`, `clearDsl()`, `confirmDsl()`, `uploadDslToPipeline()`, `renderDslToPipeline(json)` (submits a DSL JSON object directly to the pipeline without a file picker)  
 **Markdown methods:** `startMdStream()`, `appendMdChunk(text)`, `endMdStream()`, `setMdFullText(text, lock?)`, `getMdContent()`, `clearMd()`, `confirmMd()`  
 **Preview:** `uploadZip()`, `runPlugin()` (exposed by `IframePanel`)
 
-The bridge also handles inbound `postMessage` from the host — see `INTEGRATION.md` for the full message protocol (`NODE_DSL_JSON`, `NODE_DSL_PIPELINE`, `PIPELINE_ZIP_DATA`, `MD_STREAM_START`, etc.).
+The bridge also handles inbound `postMessage` from the host. Inbound message types are typed as `PreviewPostMessageEvent` and outbound (iframe → host) as `PostMessageEvent` in `src/types/window.d.ts`. See `INTEGRATION.md` for the full message protocol (`NODE_DSL_JSON`, `NODE_DSL_PIPELINE`, `PIPELINE_ZIP_DATA`, `MD_STREAM_START`, etc.).
 
 The Navbar emits `STEP_CHANGED { step: 1|2|3 }` to the parent when the user clicks a step button.
 

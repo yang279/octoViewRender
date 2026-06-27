@@ -18,7 +18,13 @@ export default defineComponent({
       return (s >= 1 && s <= 3) ? s : 1
     })
 
-    const currentRo = computed(() => (route.query.ro as string) || '')
+    const currentRo = computed(() => {
+      void route.fullPath
+      const hash = window.location.hash
+      const m = hash.match(/[?&]ro=(.+)/)
+      if (!m) return ''
+      try { return decodeURIComponent(m[1]) } catch { return m[1] }
+    })
 
     function goToStep(n: number) {
       router.replace({ path: '/', query: { step: String(n), ro: currentRo.value } })

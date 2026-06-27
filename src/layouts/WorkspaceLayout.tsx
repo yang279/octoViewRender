@@ -19,13 +19,22 @@ export default defineComponent({
       return (s >= 1 && s <= 3) ? s : 1
     })
 
-    const ro = computed(() => (route.query.ro as string) || '')
+    // Read ro from the raw hash to avoid Vue Router truncating unencoded URLs
+    // at '&' characters (e.g. ro=https://x.com/a?id=1&foo=2 → only id=1 survives).
+    // route.fullPath is accessed only to trigger reactivity on navigation.
+    const ro = computed(() => {
+      void route.fullPath
+      const hash = window.location.hash
+      const m = hash.match(/[?&]ro=(.+)/)
+      if (!m) return ''
+      try { return decodeURIComponent(m[1]) } catch { return m[1] }
+    })
     const showDialog = computed(() => ro.value === '')
 
     onMounted(() => {
       const s = Number(route.query.step)
       if (!(s >= 1 && s <= 3)) {
-        router.replace({ path: '/', query: { step: '1', ro: route.query.ro as string || '' } })
+        router.replace({ path: '/', query: { step: '1', ro: ro.value } })
       }
       window.parent?.postMessage({ type: 'STEP_CHANGED', payload: { step: step.value } }, '*')
     })

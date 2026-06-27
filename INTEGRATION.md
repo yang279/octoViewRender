@@ -19,22 +19,33 @@
 
 ### 预览地址（`ro` 参数）
 
-步骤三 iframe 的 URL 通过 `ro` query param 传入。三种方式：
+步骤三 iframe 的 URL 通过 `ro` query param 传入。应用从 hash 手动解析 `ro`（正则 `ro=(.+)` 贪婪匹配到字符串末尾），不依赖 Vue Router 解码，因此即使宿主未 `encodeURIComponent`，只要 `ro` 是最后一个 query param，URL 也不会被截断。
 
-| 方式 | 说明 | 是否有截断风险 |
+三种方式：
+
+| 方式 | 说明 | 截断风险 |
 |---|---|---|
-| URL query `ro` | `#/?step=3&ro=ENCODED_URL` — **宿主必须 `encodeURIComponent`** | 有（宿主不编码则截断） |
-| 弹窗手动输入 | 应用自动弹出，用户填入 URL — Vue Router 自动编码 | 无 |
+| URL query `ro` | `#/?step=3&ro=URL` — **`ro` 必须是最后一个参数** | 仅当 `ro` 不在末尾时有截断风险 |
+| 弹窗手动输入 | 应用启动时弹出，用户填入 URL（`ro` 为空时触发） | 无 |
 | `INIT_PREVIEW_URL` postMessage | 宿主发 `{ type: 'INIT_PREVIEW_URL', payload: { url } }` | 无（推荐） |
 
-> URL query `ro` 如果宿主未编码，浏览器会在 `?` 和 `&` 处截断。推荐宿主使用 `INIT_PREVIEW_URL` postMessage。
+> **重要：`ro` 必须是 URL 中最后一个 query param。** 正则 `(.+)` 从 `ro=` 贪婪匹配到字符串末尾，如果 `ro` 后面还有其他参数（如 `/#/?ro=URL&step=3`），`step` 会被吞入 `ro` 值导致错误。正确写法：`/#/?step=3&ro=URL`。
 
-> 应用启动时若 `ro` 为空，会弹出不可跳过的输入弹窗，要求用户手动填写预览地址。postMessage 优先于弹窗——收到 `INIT_PREVIEW_URL` 后弹窗自动关闭。
+> 推荐宿主仍对 `ro` 做 `encodeURIComponent`，这是最安全的做法。但即使不编码，只要 `ro` 在末尾，应用也能正确解析。
 
-> URL query `ro` 宿主端示例：
+> 应用启动时若 `ro` 为空，弹出不可跳过的输入弹窗。`INIT_PREVIEW_URL` postMessage 优先——收到后弹窗自动关闭。
+
+> 宿主端示例：
 > ```js
+> // 推荐：编码 + ro 在末尾
 > const ro = 'https://pixso.com/plugin?id=123&token=abc'
-> const appUrl = `/#/?step=3&ro=${encodeURIComponent(ro)}`  // 必须 encodeURIComponent
+> const appUrl = `/#/?step=3&ro=${encodeURIComponent(ro)}`
+>
+> // 也可以不编码，但 ro 必须在末尾
+> const appUrl = `/#/?step=3&ro=${ro}`
+>
+> // ❌ 错误：ro 不在末尾 — step=3 会被吞入 ro 值
+> const appUrl = `/#/?ro=${ro}&step=3`
 > ```
 
 ## 通信方式
@@ -65,7 +76,7 @@ window.addEventListener('message', (e) => {
 宿主也可通过修改 iframe src 的 hash query 来切换步骤：
 
 ```js
-iframe.src = 'http://host:port/#/?step=3&ro=ENCODED_URL'  // 切到步骤三
+iframe.src = 'http://host:port/#/?step=3&ro=ENCODED_URL'  // ro 必须在末尾
 ```
 
 ### 空状态
@@ -186,9 +197,8 @@ clearDsl            →  解锁，按钮灰色（isEmpty）, 空状态可见
 
 | 方法 | 签名 | 说明 |
 |---|---|---|
-| `uploadDslToPipeline()` | `() → void` | 弹出文件选择器加载 JSON → 调 dsl-to-hex API → 加载 ZIP 预览 |
+| `uploadDslToPipeline()` | `() → void` | 弹出文件选择器加载 JSON → 调 pipeline API → 加载 ZIP 预览 |
 | `uploadZip()` | `() → void` | 弹出文件选择器加载 ZIP |
-| `runPlugin()` | `() → Promise<void>` | Pixso 插件执行 |
 
 ### postMessage 入站（宿主 → iframe）
 
