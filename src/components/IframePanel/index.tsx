@@ -38,8 +38,8 @@ export default defineComponent({
       if (!iframe) { console.warn('[Plugin] No iframe found'); return }
       if (!iframeReady.value) { console.warn('[Plugin] iframe not loaded yet'); return }
 
-      const fsEvent = (iframe.contentWindow as any)?.__fullsecreenEvent__
-      if (!fsEvent) { console.warn('[Plugin] __fullsecreenEvent__ not found on iframe window'); return }
+      const fsEvent = (iframe.contentWindow as any)?.__fullScreenEvent__
+      if (!fsEvent) { console.warn('[Plugin] __fullScreenEvent__ not found on iframe window'); return }
 
       const hex = previewStore.hexData
       const svgs = previewStore.resourceMap
