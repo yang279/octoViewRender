@@ -10,20 +10,25 @@ const ITEMS = [
   { type: 'text', label: '文字', color: SEMANTIC_COLOR.text },
 ]
 
+const DOT_COLORS = [SEMANTIC_COLOR.frame, SEMANTIC_COLOR.component, SEMANTIC_COLOR.icon]
+
 export default defineComponent({
   name: 'WireframeLegend',
   setup() {
     return () => (
       <div class="group relative inline-flex items-center">
-        <div class="flex items-center px-2 py-1 rounded-lg bg-white/80 backdrop-blur-sm shadow-sm cursor-default">
-          <svg class="w-4 h-4 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a4 4 0 014-4h14a4 4 0 014 4v12a4 4 0 01-4 4H7z" />
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h10" />
-          </svg>
+        <div class="flex items-center gap-1 px-2 py-1.5 rounded-lg bg-white shadow-sm cursor-default border border-gray-200">
+          {DOT_COLORS.map((c, i) => (
+            <span
+              key={i}
+              class="w-2.5 h-2.5 rounded-full"
+              style={{ backgroundColor: c }}
+            />
+          ))}
         </div>
-        <div class="absolute top-full right-0 mt-1 hidden group-hover:flex flex-col gap-2 px-3 py-2 bg-white/80 backdrop-blur-sm rounded-lg shadow-sm z-50">
+        <div class="absolute top-full right-0 mt-1 hidden group-hover:flex flex-col gap-1.5 min-w-[80px] px-3 py-2 bg-white rounded-lg shadow-md z-50">
           {ITEMS.map(item => (
-            <div key={item.type} class="flex items-center gap-1.5">
+            <div key={item.type} class="flex items-center gap-1.5 whitespace-nowrap">
               <span
                 class="w-3 h-3 rounded-full flex-shrink-0"
                 style={{ backgroundColor: item.color }}

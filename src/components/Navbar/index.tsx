@@ -57,13 +57,13 @@ export default defineComponent({
     }
 
     return () => (
-      <nav class="flex items-center justify-between px-4 h-10 bg-white border-b border-gray-200 flex-shrink-0">
+      <nav class="flex items-center justify-between px-4 h-12 bg-gray-100 border-b border-gray-200 flex-shrink-0">
         <div class="flex items-center gap-0.5">
           {STEPS.map((s) => (
             <button
               key={s.key}
               class={[
-                'flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-medium transition-all duration-150',
+                'flex items-center gap-1.5 px-2 py-1 rounded-lg text-xs font-medium transition-all duration-150',
                 currentStep.value === Number(s.key)
                   ? 'bg-blue-50 text-blue-600 ring-1 ring-blue-200'
                   : 'text-gray-500 hover:bg-gray-50 hover:text-gray-700',
@@ -71,7 +71,7 @@ export default defineComponent({
               onClick={() => goToStep(Number(s.key))}
             >
               <span class={[
-                'w-4 h-4 rounded-full flex items-center justify-center text-[9px] font-bold',
+                'w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold',
                 currentStep.value === Number(s.key)
                   ? 'bg-blue-500 text-white'
                   : 'bg-gray-200 text-gray-500',
@@ -86,7 +86,7 @@ export default defineComponent({
           {currentStep.value === 1 && (
             <button
               class={[
-                'px-3 py-0.5 rounded text-xs font-medium transition',
+                'px-3 py-1 rounded text-sm font-medium transition',
                 mdDisabled()
                   ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
                   : 'bg-blue-500 text-white hover:bg-blue-600',
@@ -100,7 +100,7 @@ export default defineComponent({
           {currentStep.value === 2 && (
             <>
               <button
-                class="px-3 py-0.5 rounded text-xs font-medium bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 transition"
+                class="px-3 py-1 rounded text-sm font-medium bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 transition"
                 onClick={onUploadDsl}
               >
                 上传 DSL
@@ -109,7 +109,7 @@ export default defineComponent({
               <button
                 v-show={currentRo.value && previewStore.pixsoReady}
                 class={[
-                  'px-3 py-0.5 rounded text-xs font-medium transition',
+                  'px-3 py-1 rounded text-sm font-medium transition',
                   dslDisabled()
                     ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
                     : 'bg-blue-500 text-white hover:bg-blue-600',

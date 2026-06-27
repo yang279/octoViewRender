@@ -82,7 +82,7 @@ export default defineComponent({
     return () => (
       <div
         ref={containerRef}
-        class="w-full h-full overflow-auto bg-slate-100"
+        class="w-full h-full overflow-auto bg-white"
         onClick={() => emit('nodeClick', null)}
       >
         <div

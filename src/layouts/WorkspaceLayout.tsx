@@ -39,7 +39,7 @@ export default defineComponent({
     }, { immediate: true })
 
     return () => (
-      <div class="flex flex-col h-screen bg-gray-50">
+      <div class="flex flex-col h-screen bg-white">
         <Navbar />
         <div class="flex-1 min-h-0">
           <div v-show={step.value === 1} class="h-full">
