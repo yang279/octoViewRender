@@ -5,17 +5,37 @@
 ## 嵌入方式
 
 ```html
-<iframe id="app" src="http://host:port/#/markdown"></iframe>
+<iframe id="app" src="http://host:port/#/"></iframe>
 ```
 
 | 路由 | 步骤 | 页面 | 说明 |
 |---|---|---|---|
-| `#/markdown` | 1 | Markdown 编辑器 | Vditor IR 模式，无工具栏，上方"确认生成"按钮 |
-| `#/editor` | 2 | 线框编辑器 | DSL 树渲染，上方"确认渲染"按钮 |
-| `#/preview` | 3 | 预览 | iframe 加载 URL 或 ZIP |
-| `#/` | — | 默认重定向到 `#/editor` | |
+| `#/` | 1 | Markdown 编辑器 | 默认步骤，query `step` 缺失时自动补写为 1 |
+| `#/` + `?step=1` | 1 | Markdown 编辑器 | Vditor IR 模式，无工具栏，上方"确认生成"按钮 |
+| `#/` + `?step=2` | 2 | 线框编辑器 | DSL 树渲染，上方"确认渲染"按钮 |
+| `#/` + `?step=3&ro=URL` | 3 | 预览 | iframe 加载 `ro` URL 或 ZIP |
 
-> 三个页面共享同一个 Pinia 状态，切换路由不会丢失数据。
+> 三个页面始终挂载（`v-show` 切换），共享 Pinia 状态，切换步骤不丢失数据。
+
+### 预览地址（`ro` 参数）
+
+步骤三 iframe 的 URL 通过 `ro` query param 传入。三种方式：
+
+| 方式 | 说明 | 是否有截断风险 |
+|---|---|---|
+| URL query `ro` | `#/?step=3&ro=ENCODED_URL` — **宿主必须 `encodeURIComponent`** | 有（宿主不编码则截断） |
+| 弹窗手动输入 | 应用自动弹出，用户填入 URL — Vue Router 自动编码 | 无 |
+| `INIT_PREVIEW_URL` postMessage | 宿主发 `{ type: 'INIT_PREVIEW_URL', payload: { url } }` | 无（推荐） |
+
+> URL query `ro` 如果宿主未编码，浏览器会在 `?` 和 `&` 处截断。推荐宿主使用 `INIT_PREVIEW_URL` postMessage。
+
+> 应用启动时若 `ro` 为空，会弹出不可跳过的输入弹窗，要求用户手动填写预览地址。postMessage 优先于弹窗——收到 `INIT_PREVIEW_URL` 后弹窗自动关闭。
+
+> URL query `ro` 宿主端示例：
+> ```js
+> const ro = 'https://pixso.com/plugin?id=123&token=abc'
+> const appUrl = `/#/?step=3&ro=${encodeURIComponent(ro)}`  // 必须 encodeURIComponent
+> ```
 
 ## 通信方式
 
@@ -42,10 +62,10 @@ window.addEventListener('message', (e) => {
 })
 ```
 
-宿主也可通过修改 iframe src 的 hash 来切换页面：
+宿主也可通过修改 iframe src 的 hash query 来切换步骤：
 
 ```js
-iframe.src = 'http://host:port/#/preview'  // 切到步骤三
+iframe.src = 'http://host:port/#/?step=3&ro=ENCODED_URL'  // 切到步骤三
 ```
 
 ### 空状态
@@ -176,8 +196,11 @@ clearDsl            →  解锁，按钮灰色（isEmpty）, 空状态可见
 |---|---|---|
 | `NODE_DSL_PIPELINE` | DSL 树 JSON 对象 | 加载 DSL 并调 dsl-to-hex API → 生成 ZIP 预览 |
 | `PIPELINE_ZIP_DATA` | `ArrayBuffer`（Transferable） | 直接传入 ZIP 二进制数据 |
+| `INIT_PREVIEW_URL` | `{ url: string }` | 设置步骤三 iframe 预览地址（优先级高于弹窗，自动关闭弹窗） |
 
 > `PIPELINE_ZIP_DATA` 的 payload 是 `ArrayBuffer`，可通过 Transferable 零拷贝传输。
+
+> `INIT_PREVIEW_URL` 完全绕过 URL 编码问题，推荐宿主集成使用。
 
 ### postMessage 出站（iframe → 宿主）
 
@@ -205,10 +228,13 @@ TypeScript 类型见 `src/types/window.d.ts`：
 ```js
 const iframe = document.createElement('iframe')
 iframe.id = 'app'
-iframe.src = 'http://localhost:5173/#/markdown'
+iframe.src = 'http://localhost:5173/#/?step=1'
 iframe.style.width = '100%'
 iframe.style.height = '100%'
 document.body.appendChild(iframe)
+
+// 推荐：用 postMessage 设置预览地址（无截断风险）
+iframe.contentWindow.postMessage({ type: 'INIT_PREVIEW_URL', payload: { url: 'https://pixso.com/plugin?id=123&token=abc' } }, '*')
 
 window.addEventListener('message', (e) => {
   if (e.source !== iframe.contentWindow) return
@@ -292,7 +318,7 @@ iframe.contentWindow.setMdFullText('# 仅展示\n\n不可编辑', true)      // 
 
 ```js
 const iframe = document.getElementById('app')
-iframe.src = 'http://localhost:5173/#/editor'
+iframe.src = 'http://localhost:5173/#/?step=2'
 
 const dslJson = {
   nid: 1,
@@ -323,7 +349,7 @@ window.addEventListener('message', (e) => {
 
 ```js
 const iframe = document.getElementById('app')
-iframe.src = 'http://localhost:5173/#/preview'
+iframe.src = 'http://localhost:5173/#/?step=3&ro=' + encodeURIComponent('https://pixso.com/plugin?id=123')
 
 iframe.contentWindow.postMessage({ type: 'NODE_DSL_PIPELINE', payload: dslJson }, '*')
 
@@ -338,7 +364,7 @@ window.addEventListener('message', (e) => {
 
 ```js
 const iframe = document.getElementById('app')
-iframe.src = 'http://localhost:5173/#/preview'
+iframe.src = 'http://localhost:5173/#/?step=3'
 
 const zipBuffer = await fetch('/some.zip').then(r => r.arrayBuffer())
 iframe.contentWindow.postMessage(
@@ -358,7 +384,7 @@ window.addEventListener('message', (e) => {
 
 ```js
 class AppBridge {
-  constructor(src = 'http://localhost:5173/#/markdown') {
+  constructor(src = 'http://localhost:5173/#/?step=1') {
     this.handlers = {}
     this.iframe = document.createElement('iframe')
     this.iframe.id = 'app'
@@ -388,9 +414,8 @@ class AppBridge {
   }
 
   navigate(step) {
-    const paths = { 1: '#/markdown', 2: '#/editor', 3: '#/preview' }
     const base = new URL(this.iframe.src).origin
-    this.iframe.src = base + '/' + paths[step]
+    this.iframe.src = base + '/#/?step=' + step
     return this
   }
 
@@ -403,12 +428,18 @@ class AppBridge {
     this.iframe.contentWindow.postMessage({ type, payload }, '*', transfer)
     return this
   }
+
+  setPreviewUrl(url) {
+    this.iframe.contentWindow.postMessage({ type: 'INIT_PREVIEW_URL', payload: { url } }, '*')
+    return this
+  }
 }
 
 // 使用
 const bridge = new AppBridge()
 bridge
   .mount(document.getElementById('container'))
+  .setPreviewUrl('https://pixso.com/plugin?id=123&token=abc')
   .on('STEP_CHANGED', (p) => console.log('步骤', p.step))
   .on('MD_CONTENT_CONFIRMED', (p) => console.log('确认:', p.text))
   .on('DSL_RENDER_CONFIRMED', (p) => console.log('渲染确认:', p.dsl))

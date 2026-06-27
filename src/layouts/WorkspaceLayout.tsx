@@ -1,6 +1,7 @@
 import { defineComponent, computed, watch, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import Navbar from '@/components/Navbar'
+import RoInputDialog from '@/components/RoInputDialog'
 import MarkdownPage from '@/views/MarkdownPage/index'
 import EditorPage from '@/views/EditorPage/index'
 import PreviewPage from '@/views/PreviewPage/index'
@@ -19,6 +20,7 @@ export default defineComponent({
     })
 
     const ro = computed(() => (route.query.ro as string) || '')
+    const showDialog = computed(() => ro.value === '')
 
     onMounted(() => {
       const s = Number(route.query.step)
@@ -31,6 +33,10 @@ export default defineComponent({
     watch(ro, (url) => {
       if (url) previewStore.load(url)
     }, { immediate: true })
+
+    function onRoConfirm(url: string) {
+      router.replace({ path: '/', query: { step: String(step.value), ro: url } })
+    }
 
     return () => (
       <div class="flex flex-col h-screen bg-gray-50">
@@ -46,6 +52,7 @@ export default defineComponent({
             <PreviewPage />
           </div>
         </div>
+        <RoInputDialog visible={showDialog.value} step={step.value} onConfirm={onRoConfirm} />
       </div>
     )
   },

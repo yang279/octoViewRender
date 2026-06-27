@@ -59,6 +59,7 @@ export interface PreviewPostMessageEvent {
   DSL_CONFIRM: undefined
   NODE_DSL_PIPELINE: unknown
   PIPELINE_ZIP_DATA: ArrayBuffer
+  INIT_PREVIEW_URL: { url: string }
 
   MD_STREAM_START: undefined
   MD_STREAM_CHUNK: { text: string }

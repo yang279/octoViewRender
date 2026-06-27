@@ -2,6 +2,7 @@ import { onMounted, onUnmounted } from 'vue'
 import { useDslStore } from '@/stores/dsl'
 import { useMdStore } from '@/stores/md'
 import { usePreviewStore } from '@/stores/preview'
+import router from '@/router'
 import type { ZipResource, DslNode } from '@/types/dsl'
 
 const PIPELINE_URL = 'http://localhost:3204/pipeline'
@@ -288,6 +289,11 @@ export function useWindowBridge() {
       mdStore.confirmMd()
     } else if (event.data?.type === 'DSL_CONFIRM') {
       dslStore.confirmDsl()
+    } else if (event.data?.type === 'INIT_PREVIEW_URL') {
+      const url = event.data.payload?.url
+      if (!url) return
+      const currentStep = Number(router.currentRoute.value.query.step) || 1
+      router.replace({ path: '/', query: { step: String(currentStep >= 1 && currentStep <= 3 ? currentStep : 1), ro: url } })
     }
   }
 
