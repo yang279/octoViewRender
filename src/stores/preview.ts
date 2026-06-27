@@ -10,6 +10,7 @@ export const usePreviewStore = defineStore('preview', () => {
   const hexData    = ref('')
   const resourceMap     = ref<Record<string, string | Uint8Array>>({})
   const version    = ref(0)
+  const pipelineLoading = ref(false)
   let _cleanup: (() => void) | null = null
 
   const isEmpty = computed(() => src.value === '' && resources.value.length === 0)
@@ -62,7 +63,7 @@ export const usePreviewStore = defineStore('preview', () => {
   }
 
   return {
-    src, error, txtContent, resources, hexData, resourceMap, version, isEmpty,
+    src, error, txtContent, resources, hexData, resourceMap, version, isEmpty, pipelineLoading,
     load, setError, clearError, setTxt, setResources, setHexData, setResourceMap, clear,
   }
 })

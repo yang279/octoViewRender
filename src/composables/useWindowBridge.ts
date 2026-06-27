@@ -160,6 +160,7 @@ export function useWindowBridge() {
 
   // ── DSL → pipeline API → ZIP → Pixso ─────────────────────────────
   async function dslToPipeline(json: unknown) {
+    previewStore.pipelineLoading = true
     try {
       const pageName = (json as any)?.meta?.file_name || ''
       const fileBlob = new Blob([JSON.stringify(json)], { type: 'application/json' })
@@ -211,6 +212,8 @@ export function useWindowBridge() {
       previewStore.setError(`pipeline 异常: ${errMsg}`)
       window.parent?.postMessage({ type: 'PIPELINE_LOADED', payload: { success: false, error: errMsg } }, '*')
       console.error('[Pipeline] Failed:', err)
+    } finally {
+      previewStore.pipelineLoading = false
     }
   }
 

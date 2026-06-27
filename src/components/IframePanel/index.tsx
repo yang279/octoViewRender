@@ -1,4 +1,4 @@
-import { defineComponent, ref, watch, toRaw } from 'vue'
+import { defineComponent, ref, watch, onMounted, onUnmounted, toRaw } from 'vue'
 import { usePreviewStore } from '@/stores/preview'
 
 export default defineComponent({
@@ -10,30 +10,27 @@ export default defineComponent({
     const loading     = ref(false)
     const iframeRef   = ref<HTMLIFrameElement | null>(null)
     const iframeReady = ref(false)
+    const pixsoReady  = ref(false)
 
     watch(() => previewStore.src, (src) => {
       if (src) {
-        iframeSrc.value = src
-        loading.value = true
+        iframeSrc.value  = src
+        loading.value    = true
+        iframeReady.value = false
+        pixsoReady.value  = false
       }
     }, { immediate: true })
 
     watch(() => previewStore.version, () => {
       if (!previewStore.hexData) return
-      try {
-        const iframe = iframeRef.value
-        if (!iframe || !iframeReady.value) return
-        const fsEvent = (iframe.contentWindow as any)?.__fullsecreenEvent__
-        if (!fsEvent) {
-          console.warn('[Plugin] ZIP loaded but __fullsecreenEvent__ not found yet')
-          return
-        }
-        console.info('[Plugin] ZIP loaded, iframe ready, auto-running plugin')
-        runPlugin()
-      } catch (err) {
-        console.warn(`[Plugin] Access iframe failed: ${(err as Error).message}`)
-      }
+      tryRunPlugin()
     })
+
+    function tryRunPlugin() {
+      if (!pixsoReady.value || !iframeReady.value) return
+      if (!previewStore.hexData && !Object.keys(previewStore.resourceMap).length) return
+      runPlugin()
+    }
 
     async function runPlugin() {
       const iframe = iframeRef.value
@@ -66,23 +63,22 @@ export default defineComponent({
     }
 
     function onIframeLoad() {
-      loading.value = false
+      loading.value   = false
       iframeReady.value = true
-
-      if (!previewStore.hexData && !Object.keys(previewStore.resourceMap).length) return
-
-      const iframe = iframeRef.value
-      if (!iframe) return
-
-      const fsEvent = (iframe.contentWindow as any)?.__fullsecreenEvent__
-      if (!fsEvent) {
-        console.warn('[Plugin] iframe loaded but __fullsecreenEvent__ not yet available')
-        return
-      }
-
-      console.info('[Plugin] __fullsecreenEvent__ detected, auto-running plugin')
-      runPlugin()
+      tryRunPlugin()
     }
+
+    function onPixsoMessage(event: MessageEvent) {
+      if (event.source !== iframeRef.value?.contentWindow) return
+      if (event.data?.type === '__pixso_init__') {
+        console.info('[Plugin] Received __pixso_init__ from iframe')
+        pixsoReady.value = true
+        tryRunPlugin()
+      }
+    }
+
+    onMounted(() => { window.addEventListener('message', onPixsoMessage) })
+    onUnmounted(() => { window.removeEventListener('message', onPixsoMessage) })
 
     return () => (
       <div class="flex flex-col h-full bg-white">
