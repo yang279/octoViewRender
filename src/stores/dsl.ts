@@ -45,7 +45,7 @@ export const useDslStore = defineStore('dsl', () => {
   function confirmDsl() {
     if (isEmpty.value || isConfirmed.value) return
     isConfirmed.value = true
-    postToParent('DSL_RENDER_CONFIRMED', { dsl: root.value })
+    postToParent('DSL_RENDER_CONFIRMED', { dsl: JSON.parse(JSON.stringify(root.value)) })
   }
 
   return { root, sourceName, isEmpty, isConfirmed, setRoot, updateNodeMeta, confirmDsl }
