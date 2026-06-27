@@ -99,13 +99,13 @@ export default defineComponent({
           )}
           {currentStep.value === 2 && (
             <>
+              <WireframeLegend />
               <button
                 class="px-3 py-1 rounded text-sm font-medium bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 transition"
                 onClick={onUploadDsl}
               >
                 上传 DSL
               </button>
-              <WireframeLegend />
               <button
                 v-show={currentRo.value && previewStore.pixsoReady}
                 class={[
