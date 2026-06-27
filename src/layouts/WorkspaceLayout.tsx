@@ -17,7 +17,10 @@ export default defineComponent({
       return (s >= 1 && s <= 3) ? s : 1
     })
 
-    const ro = computed(() => (route.query.ro as string) || '')
+    const ro = computed(() => {
+      const raw = route.query.ro as string || ''
+      return raw ? decodeURIComponent(raw) : ''
+    })
 
     watch(ro, (url) => {
       if (url) previewStore.load(url)
