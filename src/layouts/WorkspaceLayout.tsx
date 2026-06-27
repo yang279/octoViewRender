@@ -1,5 +1,5 @@
-import { defineComponent, computed, watch } from 'vue'
-import { useRoute } from 'vue-router'
+import { defineComponent, computed, watch, onMounted } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 import Navbar from '@/components/Navbar'
 import MarkdownPage from '@/views/MarkdownPage/index'
 import EditorPage from '@/views/EditorPage/index'
@@ -10,6 +10,7 @@ export default defineComponent({
   name: 'WorkspaceLayout',
   setup() {
     const route = useRoute()
+    const router = useRouter()
     const previewStore = usePreviewStore()
 
     const step = computed(() => {
@@ -17,9 +18,14 @@ export default defineComponent({
       return (s >= 1 && s <= 3) ? s : 1
     })
 
-    const ro = computed(() => {
-      const raw = route.query.ro as string || ''
-      return raw ? decodeURIComponent(raw) : ''
+    const ro = computed(() => (route.query.ro as string) || '')
+
+    onMounted(() => {
+      const s = Number(route.query.step)
+      if (!(s >= 1 && s <= 3)) {
+        router.replace({ path: '/', query: { step: '1', ro: route.query.ro as string || '' } })
+      }
+      window.parent?.postMessage({ type: 'STEP_CHANGED', payload: { step: step.value } }, '*')
     })
 
     watch(ro, (url) => {

@@ -18,13 +18,10 @@ export default defineComponent({
       return (s >= 1 && s <= 3) ? s : 1
     })
 
-    const currentRo = computed(() => {
-      const raw = route.query.ro as string || ''
-      return raw ? decodeURIComponent(raw) : ''
-    })
+    const currentRo = computed(() => (route.query.ro as string) || '')
 
     function goToStep(n: number) {
-      router.replace({ path: '/', query: { step: String(n), ro: currentRo.value ? encodeURIComponent(currentRo.value) : '' } })
+      router.replace({ path: '/', query: { step: String(n), ro: currentRo.value } })
       window.parent?.postMessage({ type: 'STEP_CHANGED', payload: { step: n } }, '*')
     }
 
