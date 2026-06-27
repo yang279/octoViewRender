@@ -4,7 +4,7 @@ import { useMdStore } from '@/stores/md'
 import { usePreviewStore } from '@/stores/preview'
 import type { ZipResource, DslNode } from '@/types/dsl'
 
-const DSL_TO_HEX_URL = 'http://localhost:3204/dsl-to-hex/convert'
+const PIPELINE_URL = 'http://localhost:3204/pipeline'
 
 const MIME: Record<string, string> = {
   '.svg':  'image/svg+xml',
@@ -161,30 +161,42 @@ export function useWindowBridge() {
   // ── DSL → pipeline API → ZIP → Pixso ─────────────────────────────
   async function dslToPipeline(json: unknown) {
     try {
-      console.log(`[DslToHex] Submitting to ${DSL_TO_HEX_URL}`)
-      const res = await fetch(DSL_TO_HEX_URL, {
+      const pageName = (json as any)?.meta?.file_name || ''
+      const fileBlob = new Blob([JSON.stringify(json)], { type: 'application/json' })
+      const formData = new FormData()
+      formData.append('file', fileBlob, 'node-dsl.json')
+      if (pageName) formData.append('page_name', pageName)
+
+      console.log(`[Pipeline] Submitting to ${PIPELINE_URL}`)
+      const res = await fetch(PIPELINE_URL, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(json),
+        body: formData,
       })
 
       if (!res.ok) {
         const body = await res.json().catch(() => ({ error: res.statusText }))
-        previewStore.setError(`dsl-to-hex 请求失败: ${body.error || res.statusText}`)
+        previewStore.setError(`pipeline 请求失败: ${body.error || res.statusText}`)
         window.parent?.postMessage({ type: 'PIPELINE_LOADED', payload: { success: false, error: body.error || res.statusText } }, '*')
         return
       }
 
       const result = await res.json()
-      if (!result.zip) {
+      if (!result.success) {
         const errMsg = result.error ?? '未知错误'
-        previewStore.setError(`dsl-to-hex 未返回 zip: ${errMsg}`)
+        previewStore.setError(`pipeline 失败: ${errMsg}`)
+        window.parent?.postMessage({ type: 'PIPELINE_LOADED', payload: { success: false, error: errMsg } }, '*')
+        return
+      }
+
+      if (!result.zip) {
+        const errMsg = result.error ?? '未返回 zip'
+        previewStore.setError(`pipeline 未返回 zip: ${errMsg}`)
         window.parent?.postMessage({ type: 'PIPELINE_LOADED', payload: { success: false, error: errMsg } }, '*')
         return
       }
 
       if (result.missing_keys?.length) {
-        console.warn('[DslToHex] missing_keys:', result.missing_keys)
+        console.warn('[Pipeline] missing_keys:', result.missing_keys)
       }
 
       const binaryStr = atob(result.zip)
@@ -196,9 +208,9 @@ export function useWindowBridge() {
       window.parent?.postMessage({ type: 'PIPELINE_LOADED', payload: { success: true, zipData } }, '*', [zipData])
     } catch (err) {
       const errMsg = (err as Error).message
-      previewStore.setError(`dsl-to-hex 异常: ${errMsg}`)
+      previewStore.setError(`pipeline 异常: ${errMsg}`)
       window.parent?.postMessage({ type: 'PIPELINE_LOADED', payload: { success: false, error: errMsg } }, '*')
-      console.error('[DslToHex] Failed:', err)
+      console.error('[Pipeline] Failed:', err)
     }
   }
 
