@@ -65,7 +65,7 @@ The router (`src/router/index.ts`) uses **`createWebHashHistory`** with a **sing
 **Preview (step 3)**
 - `usePreviewStore` (Pinia, ID `'preview'`) holds the iframe `src`, `hexData` (extracted from `.txt` files in the ZIP), and `svgMap` (keyed by bare SVG filename without extension).
 - `IframePanel` loads a URL in an iframe. When a ZIP is uploaded, it extracts resources to blob URLs, passes `hexData`/`svgMap` to the store, and auto-invokes `window.runPlugin()` once `_FicAppObj` is detected on the iframe's `contentWindow` (Pixso editor integration).
-- `NODE_DSL_PIPELINE` message / `uploadDslToPipeline()` calls the dsl-to-hex API (default port 3204, see `API.md`) → receives base64 ZIP → loads into preview. Success posts `PIPELINE_LOADED { success: true, zipData: ArrayBuffer }`.
+- `NODE_DSL_PIPELINE` message / `uploadDslToPipeline()` calls the dsl-to-hex API (`PIPELINE_URL` in `useWindowBridge`, currently `https://octo-beta.hdesign.huawei.com/dslThread/pipeline`; the backend itself listens on port 3204, see `API.md`) → receives base64 ZIP → loads into preview. Success posts `PIPELINE_LOADED { success: true, zipData: ArrayBuffer }`.
 - The iframe console is intercepted via injected script relaying `postMessage` events to the panel's Console log.
 
 ### Window bridge (`useWindowBridge`)

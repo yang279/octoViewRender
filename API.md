@@ -3,6 +3,7 @@
 接收 node-dsl schema JSON，经过节点补全、DSL 转换、hex 导出三步流水线，输出 Pixso 可导入的 hex 文件。
 
 - 默认端口：`3204`（可通过环境变量 `PORT` 修改）
+- 线上基址：`https://octo-beta.hdesign.huawei.com/dslThread/`（网关代理到本服务，前端 `PIPELINE_URL` 即指向此处的 `/pipeline`）。下文 curl 示例用本地 `http://localhost:3204` 演示，线上请替换为该基址
 - 服务启动时自动拉起三个 IPC 子进程（icon-agent、component-service、dsl-to-hex）
 
 ---

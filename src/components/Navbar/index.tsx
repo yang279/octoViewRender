@@ -4,6 +4,7 @@ import { useMdStore } from '@/stores/md'
 import { useDslStore } from '@/stores/dsl'
 import { usePreviewStore } from '@/stores/preview'
 import WireframeLegend from '@/components/WireframeRenderer/Legend'
+import { sanitizeRoUrl } from '@/utils/url'
 
 const STEPS = [
   { key: '1', label: '意图扩写' },
@@ -30,7 +31,7 @@ export default defineComponent({
       const hash = window.location.hash
       const m = hash.match(/[?&]ro=(.+)/)
       if (!m) return ''
-      try { return decodeURIComponent(m[1]) } catch { return m[1] }
+      try { return sanitizeRoUrl(decodeURIComponent(m[1])) } catch { return '' }
     })
 
     function goToStep(n: number) {

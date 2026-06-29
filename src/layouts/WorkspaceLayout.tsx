@@ -5,6 +5,7 @@ import MarkdownPage from '@/views/MarkdownPage/index'
 import EditorPage from '@/views/EditorPage/index'
 import PreviewPage from '@/views/PreviewPage/index'
 import { usePreviewStore } from '@/stores/preview'
+import { sanitizeRoUrl } from '@/utils/url'
 
 export default defineComponent({
   name: 'WorkspaceLayout',
@@ -18,7 +19,7 @@ export default defineComponent({
       return (s >= 1 && s <= 3) ? s : 1
     })
 
-    const ro = computed(() => {
+    const rawRo = computed(() => {
       void route.fullPath
       const hash = window.location.hash
       const m = hash.match(/[?&]ro=(.+)/)
@@ -26,13 +27,17 @@ export default defineComponent({
       try { return decodeURIComponent(m[1]) } catch { return m[1] }
     })
 
+    const ro = computed(() => sanitizeRoUrl(rawRo.value))
+
     onMounted(() => {
-      const s = Number(route.query.step)
-      if (!(s >= 1 && s <= 3)) {
-        router.replace({ path: '/', query: { step: '1', ro: ro.value } })
-      }
       window.parent?.postMessage({ type: 'STEP_CHANGED', payload: { step: step.value } }, '*')
     })
+
+    watch([rawRo, ro, step], () => {
+      if (rawRo.value !== ro.value) {
+        router.replace({ path: '/', query: { step: String(step.value), ro: ro.value } })
+      }
+    }, { immediate: true })
 
     watch(ro, (url) => {
       if (url) previewStore.load(url)
