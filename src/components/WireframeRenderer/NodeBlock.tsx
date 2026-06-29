@@ -46,11 +46,11 @@ const NodeBlock = defineComponent({
         width:           `${rect.w}px`,
         height:          `${rect.h}px`,
         backgroundColor: bg,
-        border:          `${hovered.value ? 2 : 1}px solid ${color}`,
+        border:          `1px solid ${color}`,
         boxSizing:       'border-box',
         cursor:          'pointer',
-        outline:         props.selected ? '2px solid #2563EB' : 'none',
-        outlineOffset:   props.selected ? '1px' : '0',
+        outline:         props.selected ? '2px solid #2563EB' : hovered.value ? `2px solid ${color}` : 'none',
+        outlineOffset:   '0',
         zIndex:          props.selected ? 10 : 'auto' as string | number,
       }
 
