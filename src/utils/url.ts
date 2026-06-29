@@ -1,5 +1,5 @@
 const ALLOWED_PREFIXES = [
-  'https://octo-v2beta.hdesign.huawei/app/design/',
+  'https://octo-v2beta.hdesign.huawei.com/app/design/',
 ]
 
 export function sanitizeRoUrl(rawUrl: string): string {

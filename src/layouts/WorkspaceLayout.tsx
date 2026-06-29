@@ -34,8 +34,18 @@ export default defineComponent({
     })
 
     watch([rawRo, ro, step], () => {
+      // 语义变化（ro 被补全/清洗）→ 正常导航回写，vue-router 会用 stringifyQuery 编码
       if (rawRo.value !== ro.value) {
         router.replace({ path: '/', query: { step: String(step.value), ro: ro.value } })
+        return
+      }
+      // 语义未变，但地址栏当前显示不是规范编码态 → 强制重写。
+      // vue-router 会把「相同 query」判为重复导航而跳过，故直接用 history 覆盖地址栏。
+      if (!ro.value) return
+      const href = router.resolve({ path: '/', query: { step: String(step.value), ro: ro.value } }).href
+      const targetHash = href.startsWith('#') ? href : '#' + href.replace(/^\/?#?/, '')
+      if (window.location.hash !== targetHash) {
+        history.replaceState(history.state, '', targetHash)
       }
     }, { immediate: true })
 
