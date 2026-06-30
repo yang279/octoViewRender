@@ -10,41 +10,61 @@
 
 | 路由 | 步骤 | 页面 | 说明 |
 |---|---|---|---|
-| `#/` | 1 | Markdown 编辑器 | 默认步骤，query `step` 缺失时自动补写为 1 |
-| `#/` + `?step=1` | 1 | Markdown 编辑器 | Vditor IR 模式，无工具栏，上方"确认生成"按钮 |
-| `#/` + `?step=2` | 2 | 线框编辑器 | DSL 树渲染，上方"确认渲染"按钮 |
-| `#/` + `?step=3&ro=URL` | 3 | 预览 | iframe 加载 `ro` URL 或 ZIP |
+| `#/` | 1 | Markdown 编辑器 | 默认步骤，query `step` 缺失时自动补写为 1，Navbar + 确认生成按钮 |
+| `#/` + `?step=1` | 1 | Markdown 编辑器 | Vditor IR 模式，无工具栏，Navbar 右侧"确认生成"按钮 |
+| `#/` + `?step=2` | 2 | 线框编辑器 | DSL 树渲染，Navbar 右侧 [图例] [上传 DSL] [确认渲染] |
+| `#/` + `?step=3&ro=URL` | 3 | 预览 | iframe 加载 `ro` URL 或 ZIP，Navbar 无右侧按钮 |
 
-> 三个页面始终挂载（`v-show` 切换），共享 Pinia 状态，切换步骤不丢失数据。
+> 三个页面始终挂载（`v-show` 切换），共享 Pinia 状态，切换步骤不丢失数据。所有步骤均显示 Navbar。
 
 ### 预览地址（`ro` 参数）
 
-步骤三 iframe 的 URL 通过 `ro` query param 传入。应用从 hash 手动解析 `ro`（正则 `ro=(.+)` 贪婪匹配到字符串末尾），不依赖 Vue Router 解码，因此即使宿主未 `encodeURIComponent`，只要 `ro` 是最后一个 query param，URL 也不会被截断。
+步骤三 iframe 的 URL 通过 `ro` query param 传入。Vue Router 使用自定义 `parseQuery`/`stringifyQuery`，对所有 query 值做完整 `encodeURIComponent`/`decodeURIComponent`（而非 Vue Router 默认的部分编码），确保嵌套 URL 在地址栏中以单层编码形式存储（如 `https%3A%2F%2F...`），读写对称无歧义。
 
-三种方式：
+应用同时从 `window.location.hash` 手动正则 `[?&]ro=(.+)` 贪婪匹配读取 `ro` 原始值，再 `decodeURIComponent` 解码一层，与自定义 `parseQuery` 行为一致。**`ro` 必须是 URL 中最后一个 query param**，正则贪婪匹配到字符串末尾。
+
+传入方式：
 
 | 方式 | 说明 | 截断风险 |
 |---|---|---|
 | URL query `ro` | `#/?step=3&ro=URL` — **`ro` 必须是最后一个参数** | 仅当 `ro` 不在末尾时有截断风险 |
 | `INIT_PREVIEW_URL` postMessage | 宿主发 `{ type: 'INIT_PREVIEW_URL', payload: { url } }` | 无（推荐） |
 
+#### `ro` 域名校验与参数补全（`sanitizeRoUrl`）
+
+所有 `ro` URL 须经过 `sanitizeRoUrl()` 处理：
+
+- **域名校验**：URL 必须以 `https://octo-v2beta.hdesign.huawei.com/app/design/` 开头，否则返回空字符串（iframe 不加载）
+- **参数补全**：自动追加 `fullscreen=1` 和 `mode=fullScreen`（如缺失）
+- **无效 URL**：域名校验失败 → `ro` 变为空字符串 → iframe 不加载，Navbar 仍可见
+
+#### `ro` 编码规范化
+
+应用在 `WorkspaceLayout` 中持续监听 `rawRo`、`ro`、`step` 变化：
+
+1. **语义变化**（`rawRo !== ro`，如域名补全/参数补全）→ `router.replace` 回写规范 URL，`stringifyQuery` 自动完整编码
+2. **语义未变但编码不规范**（地址栏 hash 与 `router.resolve` 生成的规范编码不一致）→ `history.replaceState` 直接覆盖地址栏，绕过 Vue Router 重复导航判断
+
 > **重要：`ro` 必须是 URL 中最后一个 query param。** 正则 `(.+)` 从 `ro=` 贪婪匹配到字符串末尾，如果 `ro` 后面还有其他参数（如 `/#/?ro=URL&step=3`），`step` 会被吞入 `ro` 值导致错误。正确写法：`/#/?step=3&ro=URL`。
 
-> 推荐宿主仍对 `ro` 做 `encodeURIComponent`，这是最安全的做法。但即使不编码，只要 `ro` 在末尾，应用也能正确解析。
+> 推荐宿主对 `ro` 做 `encodeURIComponent`，与 `stringifyQuery` 编码规范一致。即使不编码，只要 `ro` 在末尾且域名校验通过，应用也能正常工作——`history.replaceState` 会自动规范化地址栏编码。
 
-> `ro` 为空时整个应用显示空白页（纯白背景，无 Navbar、无面板），等待宿主通过 `INIT_PREVIEW_URL` postMessage 或 URL query `ro` 传入预览地址后才显示内容。`INIT_PREVIEW_URL` 优先——收到后空白页自动消失。
+> `ro` 为空时应用仍显示 Navbar + 三面板（各步骤自行处理空数据状态），等待宿主通过 `INIT_PREVIEW_URL` postMessage 或 URL query `ro` 传入预览地址。
 
 > 宿主端示例：
 > ```js
 > // 推荐：编码 + ro 在末尾
-> const ro = 'https://pixso.com/plugin?id=123&token=abc'
+> const ro = 'https://octo-v2beta.hdesign.huawei.com/app/design/xxx?id=123&token=abc'
 > const appUrl = `/#/?step=3&ro=${encodeURIComponent(ro)}`
 >
-> // 也可以不编码，但 ro 必须在末尾
+> // 也可以不编码，但 ro 必须在末尾且域名必须通过校验
 > const appUrl = `/#/?step=3&ro=${ro}`
 >
 > // ❌ 错误：ro 不在末尾 — step=3 会被吞入 ro 值
 > const appUrl = `/#/?ro=${ro}&step=3`
+>
+> // ❌ 错误：域名不在白名单中 — sanitizeRoUrl 返回空字符串，iframe 不加载
+> const appUrl = `/#/?step=3&ro=${encodeURIComponent('https://other-domain.com/...')}`
 > ```
 
 ## 通信方式
@@ -62,7 +82,11 @@
 
 ### 步骤切换
 
-用户点击导航栏步骤按钮时，iframe 会向宿主发出 `STEP_CHANGED` 消息：
+iframe 在以下时机向宿主发出 `STEP_CHANGED` 消息：
+
+- 初始加载（`watch(step, { immediate: true })`）
+- 用户点击 Navbar 步骤按钮
+- 宿主通过 `STEP_CHANGE` postMessage 切换步骤后
 
 ```js
 window.addEventListener('message', (e) => {
@@ -72,21 +96,15 @@ window.addEventListener('message', (e) => {
 })
 ```
 
-宿主也可通过修改 iframe src 的 hash query 来切换步骤：
+宿主通过 `STEP_CHANGE` postMessage 切换步骤（iframe 内部 `router.replace` 更新 query，`v-show` 切换面板，无需重新加载 iframe）：
 
 ```js
-iframe.src = 'http://host:port/#/?step=3&ro=ENCODED_URL'  // ro 必须在末尾
+iframe.contentWindow.postMessage({ type: 'STEP_CHANGE', payload: { step: 2 } }, '*')
 ```
 
 ### 空状态
 
-每个步骤在无数据时显示空状态提示（图标 + 文案），有数据后自动隐藏：
-
-| 步骤 | 空状态文案 | 隐藏条件 |
-|---|---|---|
-| 1 | 等待 Markdown 内容… | 有内容（`isEmpty=false`）或正在流式输入 |
-| 2 | 等待 DSL 数据… | DSL 数据已加载（`root !== null`） |
-| 3 | 等待预览数据… | ZIP 已加载或 `ro` URL 已设置 |
+各步骤无数据时不显示空状态提示（仅空白区域），Navbar 始终可见。
 
 ---
 
@@ -190,7 +208,7 @@ clearDsl            →  解锁，按钮灰色（isEmpty）, 空状态可见
 
 > `uploadDslToPipeline` 和 `NODE_DSL_PIPELINE` 虽然涉及 DSL JSON 输入，但最终目标是调用 dsl-to-hex API 生成 ZIP 并加载到预览页，因此归入 Preview 模块。
 
-> 步骤三无确认按钮，预览结果由宿主自行获取。
+> 步骤三有 Navbar（无右侧按钮），无确认按钮，预览结果由宿主自行获取。
 
 ### window 方法
 
@@ -205,11 +223,11 @@ clearDsl            →  解锁，按钮灰色（isEmpty）, 空状态可见
 |---|---|---|
 | `NODE_DSL_PIPELINE` | DSL 树 JSON 对象 | 加载 DSL 并调 dsl-to-hex API → 生成 ZIP 预览 |
 | `PIPELINE_ZIP_DATA` | `ArrayBuffer`（Transferable） | 直接传入 ZIP 二进制数据 |
-| `INIT_PREVIEW_URL` | `{ url: string }` | 设置步骤三 iframe 预览地址（优先级高于弹窗，自动关闭弹窗） |
+| `INIT_PREVIEW_URL` | `{ url: string }` | 设置步骤三 iframe 预览地址；URL 经过 `sanitizeRoUrl` 校验（域名白名单 + 参数补全），无效 URL 会被忽略 |
 
 > `PIPELINE_ZIP_DATA` 的 payload 是 `ArrayBuffer`，可通过 Transferable 零拷贝传输。
 
-> `INIT_PREVIEW_URL` 完全绕过 URL 编码问题，推荐宿主集成使用。
+> `INIT_PREVIEW_URL` 完全绕过 URL 编码问题，推荐宿主集成使用。URL 须经 `sanitizeRoUrl` 校验（域名须为 `https://octo-v2beta.hdesign.huawei.com/app/design/`），无效 URL 被忽略。
 
 ### postMessage 出站（iframe → 宿主）
 
@@ -243,7 +261,7 @@ iframe.style.height = '100%'
 document.body.appendChild(iframe)
 
 // 推荐：用 postMessage 设置预览地址（无截断风险）
-iframe.contentWindow.postMessage({ type: 'INIT_PREVIEW_URL', payload: { url: 'https://pixso.com/plugin?id=123&token=abc' } }, '*')
+iframe.contentWindow.postMessage({ type: 'INIT_PREVIEW_URL', payload: { url: 'https://octo-v2beta.hdesign.huawei.com/app/design/xxx?id=123&token=abc' } }, '*')
 
 window.addEventListener('message', (e) => {
   if (e.source !== iframe.contentWindow) return
@@ -358,7 +376,7 @@ window.addEventListener('message', (e) => {
 
 ```js
 const iframe = document.getElementById('app')
-iframe.src = 'http://localhost:5173/#/?step=3&ro=' + encodeURIComponent('https://pixso.com/plugin?id=123')
+iframe.src = 'http://localhost:5173/#/?step=3&ro=' + encodeURIComponent('https://octo-v2beta.hdesign.huawei.com/app/design/xxx?id=123')
 
 iframe.contentWindow.postMessage({ type: 'NODE_DSL_PIPELINE', payload: dslJson }, '*')
 
@@ -423,8 +441,7 @@ class AppBridge {
   }
 
   navigate(step) {
-    const base = new URL(this.iframe.src).origin
-    this.iframe.src = base + '/#/?step=' + step
+    this.iframe.contentWindow.postMessage({ type: 'STEP_CHANGE', payload: { step } }, '*')
     return this
   }
 
@@ -448,7 +465,7 @@ class AppBridge {
 const bridge = new AppBridge()
 bridge
   .mount(document.getElementById('container'))
-  .setPreviewUrl('https://pixso.com/plugin?id=123&token=abc')
+  .setPreviewUrl('https://octo-v2beta.hdesign.huawei.com/app/design/xxx?id=123&token=abc')
   .on('STEP_CHANGED', (p) => console.log('步骤', p.step))
   .on('MD_CONTENT_CONFIRMED', (p) => console.log('确认:', p.text))
   .on('DSL_RENDER_CONFIRMED', (p) => console.log('渲染确认:', p.dsl))

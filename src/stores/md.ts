@@ -54,6 +54,7 @@ export const useMdStore = defineStore('md', () => {
     pendingFullText.value = null
     pendingClear.value = false
     vd.setValue('')
+    vd.disabled()
     postToParent('MD_STREAM_STARTED', { success: true })
   }
 

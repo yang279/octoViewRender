@@ -12,6 +12,12 @@
 .vditor-ir {
   border: none !important;
   box-shadow: none !important;
+  background-color: white !important;
+}
+
+.vditor-ir pre.vditor-reset,
+.vditor-ir pre.vditor-reset:focus {
+  background-color: white !important;
 }
 
 .vditor-reset {

@@ -1,4 +1,4 @@
-import { defineComponent, computed, watch, onMounted } from 'vue'
+import { defineComponent, computed, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import Navbar from '@/components/Navbar'
 import MarkdownPage from '@/views/MarkdownPage/index'
@@ -29,9 +29,9 @@ export default defineComponent({
 
     const ro = computed(() => sanitizeRoUrl(rawRo.value))
 
-    onMounted(() => {
-      window.parent?.postMessage({ type: 'STEP_CHANGED', payload: { step: step.value } }, '*')
-    })
+    watch(step, (s) => {
+      window.parent?.postMessage({ type: 'STEP_CHANGED', payload: { step: s } }, '*')
+    }, { immediate: true })
 
     watch([rawRo, ro, step], () => {
       // 语义变化（ro 被补全/清洗）→ 正常导航回写，vue-router 会用 stringifyQuery 编码

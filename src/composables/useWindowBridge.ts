@@ -230,7 +230,6 @@ export function useWindowBridge() {
       const text = await file.text()
       const json = JSON.parse(text)
       applyDslData(json, file.name)
-      await dslToPipeline(json)
     }
     input.click()
   }
@@ -258,6 +257,7 @@ export function useWindowBridge() {
   }
 
   function onMessage(event: MessageEvent) {
+    console.log(event)
     if (event.source === window) return
     if (event.data?.type === 'NODE_DSL_JSON') {
       const payload = event.data.payload
@@ -266,7 +266,7 @@ export function useWindowBridge() {
     } else if (event.data?.type === 'NODE_DSL_PIPELINE') {
       const payload = event.data.payload
       if (!payload) return
-      dslToPipeline(payload)
+      applyDslData(payload)
     } else if (event.data?.type === 'NODE_DSL_CLEAR') {
       clearDsl()
     } else if (event.data?.type === 'PIPELINE_ZIP_DATA') {
@@ -291,6 +291,12 @@ export function useWindowBridge() {
       mdStore.confirmMd()
     } else if (event.data?.type === 'DSL_CONFIRM') {
       dslStore.confirmDsl()
+    } else if (event.data?.type === 'STEP_CHANGE') {
+      const step = event.data.payload?.step
+      if (step >= 1 && step <= 3) {
+        const currentRo = router.currentRoute.value.query.ro as string || ''
+        router.replace({ path: '/', query: { step: String(step), ro: currentRo } })
+      }
     } else if (event.data?.type === 'INIT_PREVIEW_URL') {
       const url = event.data.payload?.url
       if (!url) return
