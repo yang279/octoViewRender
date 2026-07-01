@@ -1,15 +1,13 @@
 import { defineComponent, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { useMdStore } from '@/stores/md'
 import { useDslStore } from '@/stores/dsl'
 import { usePreviewStore } from '@/stores/preview'
 import WireframeLegend from '@/components/WireframeRenderer/Legend'
 import { sanitizeRoUrl } from '@/utils/url'
 
 const STEPS = [
-  { key: '1', label: '意图扩写' },
-  { key: '2', label: '架构生成' },
-  { key: '3', label: '设计生成' },
+  { key: '1', label: '架构生成' },
+  { key: '2', label: '设计生成' },
 ]
 
 export default defineComponent({
@@ -17,13 +15,12 @@ export default defineComponent({
   setup() {
     const route        = useRoute()
     const router       = useRouter()
-    const mdStore      = useMdStore()
     const dslStore     = useDslStore()
     const previewStore = usePreviewStore()
 
     const currentStep = computed(() => {
       const s = Number(route.query.step)
-      return (s >= 1 && s <= 3) ? s : 1
+      return (s >= 1 && s <= 2) ? s : 1
     })
 
     const currentRo = computed(() => {
@@ -39,13 +36,7 @@ export default defineComponent({
       window.parent?.postMessage({ type: 'STEP_CHANGED', payload: { step: n } }, '*')
     }
 
-    const mdDisabled  = () => mdStore.isEmpty || mdStore.isStreaming || mdStore.isConfirmed
     const dslDisabled = () => dslStore.isEmpty || dslStore.isConfirmed
-
-    function onConfirmMd() {
-      if (mdDisabled()) return
-      mdStore.confirmMd()
-    }
 
     function onConfirmDsl() {
       if (dslDisabled()) return
@@ -85,20 +76,6 @@ export default defineComponent({
         </div>
         <div class="flex items-center gap-1.5">
           {currentStep.value === 1 && (
-            <button
-              class={[
-                'px-3 py-1 rounded text-sm font-medium transition',
-                mdDisabled()
-                  ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
-                  : 'bg-blue-500 text-white hover:bg-blue-600',
-              ]}
-              disabled={mdDisabled()}
-              onClick={onConfirmMd}
-            >
-              确认生成
-            </button>
-          )}
-          {currentStep.value === 2 && (
             <>
               <WireframeLegend />
               <button

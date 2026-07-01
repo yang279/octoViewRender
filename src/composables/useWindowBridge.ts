@@ -1,12 +1,12 @@
 import { onMounted, onUnmounted } from 'vue'
 import { useDslStore } from '@/stores/dsl'
-import { useMdStore } from '@/stores/md'
 import { usePreviewStore } from '@/stores/preview'
 import router from '@/router'
 import { sanitizeRoUrl } from '@/utils/url'
+import { convert as nodeDslToDesignDsl } from '@/utils/nodeDslToDesignDsl'
 import type { ZipResource, DslNode } from '@/types/dsl'
 
-const PIPELINE_URL = 'https://octo-beta.hdesign.huawei.com/dslThread/pipeline'
+const DSL_TO_HEX_URL = 'https://octo-beta.hesign.huawei.com/dslThread/dsl-to-hex/convert'
 
 const MIME: Record<string, string> = {
   '.svg':  'image/svg+xml',
@@ -23,10 +23,8 @@ const MIME: Record<string, string> = {
 
 export function useWindowBridge() {
   const dslStore     = useDslStore()
-  const mdStore      = useMdStore()
   const previewStore = usePreviewStore()
 
-  // ── shared: extract ZIP buffer → previewStore ─────────────────────
   async function processZipBuffer(buffer: ArrayBuffer) {
     const JSZip = (await import('jszip')).default
     const zip   = await JSZip.loadAsync(buffer)
@@ -88,7 +86,6 @@ export function useWindowBridge() {
     console.log(`[ZIP] loaded ${resList.length} files, hex: ${hexStr.length} chars, svgs: ${Object.keys(resourceMap).join(',')}`)
   }
 
-  // ── DSL: apply parsed data (shared by file upload & postMessage) ──
   function applyDslData(data: unknown, name = '') {
     try {
       const node = data as DslNode
@@ -99,7 +96,6 @@ export function useWindowBridge() {
     }
   }
 
-  // ── DSL: upload JSON ──────────────────────────────────────────────
   function uploadDsl() {
     const input = document.createElement('input')
     input.type = 'file'
@@ -121,7 +117,6 @@ export function useWindowBridge() {
     input.click()
   }
 
-  // ── DSL: download JSON ────────────────────────────────────────────
   function downloadDsl() {
     const json = JSON.stringify(dslStore.root, null, 2)
     const blob = new Blob([json], { type: 'application/json' })
@@ -135,7 +130,6 @@ export function useWindowBridge() {
     URL.revokeObjectURL(url)
   }
 
-  // ── Preview: upload ZIP ───────────────────────────────────────────
   let zipInput: HTMLInputElement | null = null
 
   async function uploadZip() {
@@ -160,46 +154,44 @@ export function useWindowBridge() {
     zipInput.click()
   }
 
-  // ── DSL → pipeline API → ZIP → Pixso ─────────────────────────────
   async function dslToPipeline(json: unknown) {
     previewStore.pipelineLoading = true
     try {
-      const pageName = (json as any)?.meta?.file_name || ''
-      const fileBlob = new Blob([JSON.stringify(json)], { type: 'application/json' })
-      const formData = new FormData()
-      formData.append('file', fileBlob, 'node-dsl.json')
-      if (pageName) formData.append('page_name', pageName)
+      const pageName = (json as Record<string, unknown>)?.meta
+        ? ((json as Record<string, unknown>).meta as Record<string, unknown>)?.file_name as string || ''
+        : ''
+      const designDsl = nodeDslToDesignDsl(json, pageName)
 
-      console.log(`[Pipeline] Submitting to ${PIPELINE_URL}`)
-      const res = await fetch(PIPELINE_URL, {
+      console.log(`[dsl-to-hex] Submitting design-dsl to ${DSL_TO_HEX_URL}`)
+      const res = await fetch(DSL_TO_HEX_URL, {
         method: 'POST',
-        body: formData,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(designDsl),
       })
 
       if (!res.ok) {
         const body = await res.json().catch(() => ({ error: res.statusText }))
-        previewStore.setError(`pipeline 请求失败: ${body.error || res.statusText}`)
+        previewStore.setError(`dsl-to-hex 请求失败: ${body.error || res.statusText}`)
         window.parent?.postMessage({ type: 'PIPELINE_LOADED', payload: { success: false, error: body.error || res.statusText } }, '*')
         return
       }
 
       const result = await res.json()
-      if (!result.success) {
-        const errMsg = result.error ?? '未知错误'
-        previewStore.setError(`pipeline 失败: ${errMsg}`)
-        window.parent?.postMessage({ type: 'PIPELINE_LOADED', payload: { success: false, error: errMsg } }, '*')
+      if (result.error) {
+        previewStore.setError(`dsl-to-hex 失败: ${result.error}`)
+        window.parent?.postMessage({ type: 'PIPELINE_LOADED', payload: { success: false, error: result.error } }, '*')
         return
       }
 
       if (!result.zip) {
         const errMsg = result.error ?? '未返回 zip'
-        previewStore.setError(`pipeline 未返回 zip: ${errMsg}`)
+        previewStore.setError(`dsl-to-hex 未返回 zip: ${errMsg}`)
         window.parent?.postMessage({ type: 'PIPELINE_LOADED', payload: { success: false, error: errMsg } }, '*')
         return
       }
 
       if (result.missing_keys?.length) {
-        console.warn('[Pipeline] missing_keys:', result.missing_keys)
+        console.warn('[dsl-to-hex] missing_keys:', result.missing_keys)
       }
 
       const binaryStr = atob(result.zip)
@@ -211,9 +203,9 @@ export function useWindowBridge() {
       window.parent?.postMessage({ type: 'PIPELINE_LOADED', payload: { success: true, zipData } }, '*', [zipData])
     } catch (err) {
       const errMsg = (err as Error).message
-      previewStore.setError(`pipeline 异常: ${errMsg}`)
+      previewStore.setError(`dsl-to-hex 异常: ${errMsg}`)
       window.parent?.postMessage({ type: 'PIPELINE_LOADED', payload: { success: false, error: errMsg } }, '*')
-      console.error('[Pipeline] Failed:', err)
+      console.error('[dsl-to-hex] Failed:', err)
     } finally {
       previewStore.pipelineLoading = false
       dslStore.isConfirmed = false
@@ -238,13 +230,11 @@ export function useWindowBridge() {
     await dslToPipeline(json)
   }
 
-  // ── DSL: clear wireframe ──────────────────────────────────────────
   function clearDsl() {
     dslStore.setRoot(null, '')
     dslStore.isConfirmed = false
   }
 
-  // ── postMessage bridge ────────────────────────────────────────────
   async function handlePipelineZipData(buffer: ArrayBuffer) {
     try {
       const zipData = buffer.slice(0)
@@ -273,27 +263,11 @@ export function useWindowBridge() {
       const payload = event.data.payload
       if (!(payload instanceof ArrayBuffer)) return
       handlePipelineZipData(payload)
-    } else if (event.data?.type === 'MD_STREAM_START') {
-      mdStore.startStream()
-    } else if (event.data?.type === 'MD_STREAM_CHUNK') {
-      const payload = event.data.payload
-      if (!payload?.text) return
-      mdStore.appendChunk(payload.text)
-    } else if (event.data?.type === 'MD_STREAM_END') {
-      mdStore.endStream()
-    } else if (event.data?.type === 'MD_FULL_TEXT') {
-      const payload = event.data.payload
-      if (!payload?.text) return
-      mdStore.setFullText(payload.text, payload.lock ?? false)
-    } else if (event.data?.type === 'MD_CLEAR') {
-      mdStore.clearMd()
-    } else if (event.data?.type === 'MD_CONFIRM') {
-      mdStore.confirmMd()
     } else if (event.data?.type === 'DSL_CONFIRM') {
       dslStore.confirmDsl()
     } else if (event.data?.type === 'STEP_CHANGE') {
       const step = event.data.payload?.step
-      if (step >= 1 && step <= 3) {
+      if (step >= 1 && step <= 2) {
         const currentRo = router.currentRoute.value.query.ro as string || ''
         router.replace({ path: '/', query: { step: String(step), ro: currentRo } })
       }
@@ -303,7 +277,7 @@ export function useWindowBridge() {
       const sanitized = sanitizeRoUrl(url)
       if (!sanitized) return
       const currentStep = Number(router.currentRoute.value.query.step) || 1
-      router.replace({ path: '/', query: { step: String(currentStep >= 1 && currentStep <= 3 ? currentStep : 1), ro: sanitized } })
+      router.replace({ path: '/', query: { step: String(currentStep >= 1 && currentStep <= 2 ? currentStep : 1), ro: sanitized } })
     }
   }
 
@@ -315,13 +289,6 @@ export function useWindowBridge() {
     window.renderDslToPipeline = renderDslToPipeline
     window.clearDsl            = clearDsl
     window.confirmDsl          = () => dslStore.confirmDsl()
-    window.startMdStream       = () => mdStore.startStream()
-    window.appendMdChunk       = (text: string) => mdStore.appendChunk(text)
-    window.endMdStream         = () => mdStore.endStream()
-    window.setMdFullText       = (text: string, lock?: boolean) => mdStore.setFullText(text, lock)
-    window.getMdContent        = () => mdStore.getMdContent()
-    window.clearMd             = () => mdStore.clearMd()
-    window.confirmMd           = () => mdStore.confirmMd()
     window.addEventListener('message', onMessage)
   })
 
@@ -334,13 +301,6 @@ export function useWindowBridge() {
     delete w.renderDslToPipeline
     delete w.clearDsl
     delete w.confirmDsl
-    delete w.startMdStream
-    delete w.appendMdChunk
-    delete w.endMdStream
-    delete w.setMdFullText
-    delete w.getMdContent
-    delete w.clearMd
-    delete w.confirmMd
     window.removeEventListener('message', onMessage)
   })
 }

@@ -9,14 +9,6 @@ declare global {
     renderDslToPipeline: (json: unknown) => Promise<void>
     clearDsl: () => void
     confirmDsl: () => void
-
-    startMdStream: () => void
-    appendMdChunk: (text: string) => void
-    endMdStream: () => void
-    setMdFullText: (text: string, lock?: boolean) => void
-    getMdContent: () => string
-    clearMd: () => void
-    confirmMd: () => void
   }
 }
 
@@ -36,20 +28,16 @@ export interface PostMessageEvent {
   DSL_RENDER_CONFIRMED: {
     dsl: unknown
   }
-  MD_STREAM_STARTED: {
+  PIPELINE_LOADED: {
     success: boolean
+    zipData?: ArrayBuffer
     error?: string
   }
-  MD_STREAM_ENDED: {
+  ZIP_LOADED: {
     success: boolean
+    zipData?: ArrayBuffer
     error?: string
   }
-  MD_FULL_TEXT_LOADED: {
-    success: boolean
-    error?: string
-  }
-  MD_CLEARED: undefined
-  MD_CONTENT_CONFIRMED: { text: string }
   STEP_CHANGED: { step: number }
 }
 
@@ -61,11 +49,4 @@ export interface PreviewPostMessageEvent {
   PIPELINE_ZIP_DATA: ArrayBuffer
   STEP_CHANGE: { step: number }
   INIT_PREVIEW_URL: { url: string }
-
-  MD_STREAM_START: undefined
-  MD_STREAM_CHUNK: { text: string }
-  MD_STREAM_END: undefined
-  MD_FULL_TEXT: { text: string; lock?: boolean }
-  MD_CLEAR: undefined
-  MD_CONFIRM: undefined
 }

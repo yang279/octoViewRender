@@ -25,16 +25,16 @@ No unit tests — only Playwright E2E in `tests/`. The `upload-zip` spec depends
 - **Tailwind CSS 4** via `@tailwindcss/vite` (not v3 PostCSS). No `tailwind.config.*`. Entry is `src/style.css` with `@import "tailwindcss"`.
 - **`@` path alias** → `src/` (vite.config.ts + tsconfig paths).
 - **Vite `base: './'`** — relative paths in dist; app is meant to be embedded, not served from a root domain.
-- **Hash-based routing** (`createWebHashHistory`) — `#/editor` and `#/preview`, default redirects to editor.
+- **Hash-based routing** (`createWebHashHistory`) — `?step=1` (架构生成) and `?step=2` (设计生成), default step=1.
 - **Element Plus** imported globally in `main.ts` but only used in `NodeInfoPopover` for form components and popover.
 - **Pinia store IDs** are `'dsl'` and `'preview'` — referenced by name in tests and composables.
 
 ## Architecture
 
-Single-page app with two modes under `WorkspaceLayout`:
+Single-page app with two steps under `WorkspaceLayout` (query param `step`, range 1–2):
 
-- **Editor** (`#/editor`): `useDslStore` holds nested `DslNode[]` tree → `WireframeRenderer` flattens/culls → `NodeBlock` click opens `NodeInfoPopover` for metadata editing.
-- **Preview** (`#/preview`): `usePreviewStore` holds iframe src, hexData, svgMap → `IframePanel` loads URL or ZIP in iframe, auto-invokes `window.runPlugin()` when `_FicAppObj` appears (Pixso integration).
+- **Step 1 — 架构生成** (`?step=1`): `useDslStore` holds nested `DslNode[]` tree → `WireframeRenderer` flattens/culls → `NodeBlock` click opens `NodeInfoPopover` for metadata editing. Navbar shows "上传 DSL" and "确认渲染" buttons.
+- **Step 2 — 设计生成** (`?step=2`): `usePreviewStore` holds iframe src, hexData, svgMap → `IframePanel` loads URL or ZIP in iframe, auto-invokes `window.runPlugin()` when `_FicAppObj` appears (Pixso integration).
 
 ### Window bridge
 
