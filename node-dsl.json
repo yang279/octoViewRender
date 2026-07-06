@@ -1,0 +1,712 @@
+{
+  "nid": 1,
+  "tag": "div",
+  "rect": { "x": 0, "y": 0, "w": 375, "h": 812 },
+  "layerType": "frame",
+  "layerName": "设置页根容器",
+  "layerDescription": "个人设置页面的根布局容器，纵向排列导航栏、用户信息卡片和设置列表",
+  "style": { "display": "flex", "flexDirection": "column", "backgroundColor": "rgb(245,245,245)" },
+  "children": [
+    {
+      "nid": 2,
+      "tag": "header",
+      "rect": { "x": 0, "y": 0, "w": 375, "h": 56, "fixed": true },
+      "layerType": "frame",
+      "layerName": "顶部导航栏",
+      "layerDescription": "固定在页面顶部的导航栏，包含返回图标和页面标题",
+      "style": {
+        "display": "flex",
+        "alignItems": "center",
+        "position": "fixed",
+        "top": "0px",
+        "zIndex": "100",
+        "backgroundColor": "rgb(255,255,255)",
+        "boxShadow": "0px 1px 0px rgba(0,0,0,0.08)"
+      },
+      "children": [
+        {
+          "nid": 3,
+          "tag": "span",
+          "rect": { "x": 16, "y": 16, "w": 24, "h": 24 },
+          "class": "icon icon--back",
+          "layerType": "icon",
+          "layerName": "返回图标",
+          "layerDescription": "点击后返回上一页的箭头图标，24×24 细线",
+          "style": { "fontSize": "24px", "color": "rgb(26,26,26)" },
+          "resourceType": "icon",
+          "resourceId": "icon_back_001",
+          "resourceVectorText": "navigation 返回 back arrow 左箭头图标",
+          "resourceScore": 0.92,
+          "resourceDetail": {
+            "icon_id": "icon_back_001",
+            "name": "返回",
+            "chineseName": "返回",
+            "englishName": "back",
+            "description": "返回上一页的左箭头图标",
+            "category": "基础图标",
+            "group": "导航",
+            "icon_file_type": "svg",
+            "icon_content": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path d=\"M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z\" fill=\"currentColor\"/></svg>"
+          }
+        },
+        {
+          "nid": 4,
+          "tag": "h1",
+          "rect": { "x": 130, "y": 12, "w": 115, "h": 32 },
+          "text": "设置",
+          "layerType": "text",
+          "layerName": "页面标题",
+          "layerDescription": "显示当前页面名称「设置」的标题文字",
+          "style": { "fontFamily": "PingFang SC", "fontSize": "18px", "fontWeight": "600", "textAlign": "center", "color": "rgb(26,26,26)" }
+        }
+      ]
+    },
+    {
+      "nid": 5,
+      "tag": "div",
+      "rect": { "x": 20, "y": 68, "w": 335, "h": 80 },
+      "layerType": "frame",
+      "layerName": "用户信息卡片",
+      "layerDescription": "包含用户头像和用户名的信息展示卡片",
+      "style": {
+        "display": "flex",
+        "alignItems": "center",
+        "gap": "12px",
+        "backgroundColor": "rgb(255,255,255)",
+        "borderRadius": "12px",
+        "boxShadow": "0px 2px 8px rgba(0,0,0,0.08)"
+      },
+      "children": [
+        {
+          "nid": 6,
+          "tag": "img",
+          "rect": { "x": 32, "y": 84, "w": 48, "h": 48 },
+          "src": "/images/avatar.png",
+          "alt": "用户头像",
+          "naturalWidth": 48,
+          "naturalHeight": 48,
+          "loaded": true,
+          "layerType": "image",
+          "layerName": "用户头像",
+          "layerDescription": "设置页顶部展示的用户头像图片",
+          "resourceType": "image",
+          "resourceId": "img_avatar_002",
+          "resourceVectorText": "头像 用户 个人 avatar",
+          "resourceScore": 0.85,
+          "resourceDetail": {
+            "file_path": "images/avatar-default.png",
+            "name": "默认头像",
+            "description": "通用默认用户头像图片"
+          },
+          "style": { "borderRadius": "50%" }
+        },
+        {
+          "nid": 7,
+          "tag": "span",
+          "rect": { "x": 92, "y": 100, "w": 80, "h": 20 },
+          "text": "张三",
+          "layerType": "text",
+          "layerName": "用户名文字",
+          "layerDescription": "显示当前登录用户名「张三」的文字",
+          "style": { "fontFamily": "PingFang SC", "fontSize": "16px", "fontWeight": "500", "color": "rgb(26,26,26)" }
+        },
+        {
+          "nid": 8,
+          "tag": "span",
+          "rect": { "x": 295, "y": 96, "w": 24, "h": 24 },
+          "class": "icon icon--arrow-right",
+          "layerType": "icon",
+          "layerName": "右箭头图标",
+          "layerDescription": "指示可点击进入个人信息编辑页面的箭头图标，24×24 细线",
+          "style": { "fontSize": "24px", "color": "rgb(153,153,153)" },
+          "resourceType": "icon",
+          "resourceId": "icon_arrow_002",
+          "resourceVectorText": "navigation 右箭头 arrow-right 进入图标",
+          "resourceScore": 0.90,
+          "resourceDetail": {
+            "icon_id": "icon_arrow_002",
+            "name": "箭头右",
+            "chineseName": "箭头右",
+            "englishName": "arrow-right",
+            "description": "向右的箭头图标，用于指示可点击进入下一级",
+            "category": "基础图标",
+            "group": "导航",
+            "icon_file_type": "svg",
+            "icon_content": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path d=\"M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z\" fill=\"currentColor\"/></svg>"
+          }
+        }
+      ]
+    },
+    {
+      "nid": 9,
+      "tag": "div",
+      "rect": { "x": 0, "y": 164, "w": 375, "h": 1 },
+      "layerType": "rectangle",
+      "layerName": "分割线",
+      "layerDescription": "分隔用户信息卡片与设置列表的灰色分割线",
+      "style": { "backgroundColor": "rgb(229,229,229)" }
+    },
+    {
+      "nid": 10,
+      "tag": "div",
+      "rect": { "x": 20, "y": 180, "w": 335, "h": 400 },
+      "layerType": "frame",
+      "layerName": "设置列表容器",
+      "layerDescription": "包含所有设置项的滚动列表容器",
+      "style": { "display": "flex", "flexDirection": "column", "gap": "16px" },
+      "children": [
+        {
+          "nid": 11,
+          "tag": "div",
+          "rect": { "x": 20, "y": 180, "w": 335, "h": 24 },
+          "text": "账户与安全",
+          "layerType": "text",
+          "layerName": "分组标题",
+          "layerDescription": "账户与安全相关设置的分组标题文字",
+          "style": { "fontFamily": "PingFang SC", "fontSize": "14px", "fontWeight": "600", "color": "rgb(100,100,100)" }
+        },
+        {
+          "nid": 12,
+          "tag": "div",
+          "rect": { "x": 20, "y": 212, "w": 335, "h": 160 },
+          "layerType": "frame",
+          "layerName": "账户设置卡片",
+          "layerDescription": "包含个人信息、修改密码、退出登录三个设置项的卡片容器",
+          "style": {
+            "backgroundColor": "rgb(255,255,255)",
+            "borderRadius": "12px",
+            "boxShadow": "0px 2px 8px rgba(0,0,0,0.08)"
+          },
+          "children": [
+            {
+              "nid": 13,
+              "tag": "div",
+              "rect": { "x": 32, "y": 224, "w": 311, "h": 48 },
+              "layerType": "frame",
+              "layerName": "个人信息设置项",
+              "layerDescription": "点击后进入个人信息编辑页面的设置项行",
+              "style": { "display": "flex", "alignItems": "center", "justifyContent": "space-between" },
+              "children": [
+                {
+                  "nid": 14,
+                  "tag": "span",
+                  "rect": { "x": 32, "y": 236, "w": 24, "h": 24 },
+                  "class": "icon icon--user",
+                  "layerType": "icon",
+                  "layerName": "用户图标",
+                  "layerDescription": "代表个人信息的用户头像图标，24×24 细线",
+                  "style": { "fontSize": "24px", "color": "rgb(52,120,246)" },
+                  "resourceType": "icon",
+                  "resourceId": "icon_user_003",
+                  "resourceVectorText": "用户 person 用户头像 user account",
+                  "resourceScore": 0.88,
+                  "resourceDetail": {
+                    "icon_id": "icon_user_003",
+                    "name": "用户",
+                    "chineseName": "用户",
+                    "englishName": "user",
+                    "description": "用户头像图标，用于个人信息相关场景",
+                    "category": "基础图标",
+                    "group": "用户",
+                    "icon_file_type": "png",
+                    "icon_content": "iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAADDSURBVFhH7ZdbDoAwEARBQP//M9eipYQ0k7Hv+bnJmVgO7sQ2iD+E+ER4T4hPhCdK8KUIvybEm1J8KYKfUvGlCF9K8a0If0rxrgh/SvGtCH9K8a0If0rxrgh/SvGtCH9K8a0If0rxrgh/SvGtCH9K8a0If0rxrgh/SvGtCH9K8a0If0rxrgh/SvGtCH9K8a0If0rxrgh/SvGtCH9K8a0If0rxrgj5S+NTET4n5U+N+FOKTyX4U4pPJfhTik8l+FOKTyX4U4pPJfhTik/l+BORS0AAAP//AwBQSwECMAQA"
+                  }
+                },
+                {
+                  "nid": 15,
+                  "tag": "span",
+                  "rect": { "x": 64, "y": 236, "w": 80, "h": 24 },
+                  "text": "个人信息",
+                  "layerType": "text",
+                  "layerName": "个人信息文字",
+                  "layerDescription": "显示「个人信息」的设置项文字",
+                  "style": { "fontFamily": "PingFang SC", "fontSize": "16px", "color": "rgb(26,26,26)" }
+                },
+                {
+                  "nid": 16,
+                  "tag": "span",
+                  "rect": { "x": 319, "y": 236, "w": 24, "h": 24 },
+                  "class": "icon icon--arrow-right",
+                  "layerType": "icon",
+                  "layerName": "右箭头图标",
+                  "layerDescription": "指示可点击进入个人信息页面的箭头图标，24×24 细线",
+                  "style": { "fontSize": "24px", "color": "rgb(153,153,153)" },
+                  "resourceType": "icon",
+                  "resourceId": "icon_arrow_002",
+                  "resourceVectorText": "navigation 右箭头 arrow-right 进入图标",
+                  "resourceScore": 0.90,
+                  "resourceDetail": {
+                    "icon_id": "icon_arrow_002",
+                    "name": "箭头右",
+                    "chineseName": "箭头右",
+                    "englishName": "arrow-right",
+                    "description": "向右的箭头图标，用于指示可点击进入下一级",
+                    "category": "基础图标",
+                    "group": "导航",
+                    "icon_file_type": "svg",
+                    "icon_content": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path d=\"M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z\" fill=\"currentColor\"/></svg>"
+                  }
+                }
+              ]
+            },
+            {
+              "nid": 17,
+              "tag": "div",
+              "rect": { "x": 32, "y": 272, "w": 311, "h": 48 },
+              "layerType": "frame",
+              "layerName": "修改密码设置项",
+              "layerDescription": "点击后进入修改密码页面的设置项行",
+              "style": { "display": "flex", "alignItems": "center", "justifyContent": "space-between" },
+              "children": [
+                {
+                  "nid": 18,
+                  "tag": "span",
+                  "rect": { "x": 32, "y": 284, "w": 24, "h": 24 },
+                  "class": "icon icon--lock",
+                  "layerType": "icon",
+                  "layerDescription": "代表密码安全的锁图标，24×24 细线",
+                  "layerName": "锁图标",
+                  "style": { "fontSize": "24px", "color": "rgb(52,120,246)" },
+                  "resourceType": "icon",
+                  "resourceId": "icon_lock_004",
+                  "resourceVectorText": "安全 lock 锁 密码 protection",
+                  "resourceScore": 0.91,
+                  "resourceDetail": {
+                    "icon_id": "icon_lock_004",
+                    "name": "锁",
+                    "chineseName": "锁",
+                    "englishName": "lock",
+                    "description": "安全锁图标，用于密码和隐私相关场景",
+                    "category": "基础图标",
+                    "group": "安全",
+                    "icon_file_type": "svg",
+                    "icon_content": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path d=\"M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zM12 17c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zM9 8V6c0-1.66 1.34-3 3-3s3 1.34 3 3v2H9z\" fill=\"currentColor\"/></svg>"
+                  }
+                },
+                {
+                  "nid": 19,
+                  "tag": "span",
+                  "rect": { "x": 64, "y": 284, "w": 80, "h": 24 },
+                  "text": "修改密码",
+                  "layerType": "text",
+                  "layerName": "修改密码文字",
+                  "layerDescription": "显示「修改密码」的设置项文字",
+                  "style": { "fontFamily": "PingFang SC", "fontSize": "16px", "color": "rgb(26,26,26)" }
+                },
+                {
+                  "nid": 20,
+                  "tag": "span",
+                  "rect": { "x": 319, "y": 284, "w": 24, "h": 24 },
+                  "class": "icon icon--arrow-right",
+                  "layerType": "icon",
+                  "layerName": "右箭头图标",
+                  "layerDescription": "指示可点击进入修改密码页面的箭头图标，24×24 细线",
+                  "style": { "fontSize": "24px", "color": "rgb(153,153,153)" },
+                  "resourceType": "icon",
+                  "resourceId": "icon_arrow_002",
+                  "resourceVectorText": "navigation 右箭头 arrow-right 进入图标",
+                  "resourceScore": 0.90,
+                  "resourceDetail": {
+                    "icon_id": "icon_arrow_002",
+                    "name": "箭头右",
+                    "chineseName": "箭头右",
+                    "englishName": "arrow-right",
+                    "description": "向右的箭头图标，用于指示可点击进入下一级",
+                    "category": "基础图标",
+                    "group": "导航",
+                    "icon_file_type": "svg",
+                    "icon_content": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path d=\"M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z\" fill=\"currentColor\"/></svg>"
+                  }
+                }
+              ]
+            },
+            {
+              "nid": 21,
+              "tag": "button",
+              "rect": { "x": 32, "y": 320, "w": 311, "h": 48 },
+              "class": "btn btn--danger",
+              "text": "退出登录",
+              "layerType": "component",
+              "layerName": "退出登录按钮",
+              "layerDescription": "点击后退出当前账号的危险操作按钮，红色警示样式",
+              "style": {
+                "display": "flex",
+                "justifyContent": "center",
+                "alignItems": "center",
+                "backgroundColor": "rgb(239,68,68)",
+                "borderRadius": "8px",
+                "fontSize": "16px",
+                "fontWeight": "600",
+                "color": "rgb(255,255,255)"
+              },
+              "resourceType": "component",
+              "resourceId": "comp_btn_danger_001",
+              "resourceVectorText": "按钮 基础类 normal 可用 危险 红色",
+              "resourceScore": 0.93,
+              "resourceDetail": {
+                "cv_component_name": "按钮",
+                "cv_canvas_name": "1.基础类",
+                "cv_variant_name": "size=normal, type=danger, disabled=false",
+                "cv_component_key": "button-danger-key",
+                "cv_variant_key": "comp_btn_danger_001",
+                "cv_variant_guid": "8229:11223",
+                "cv_domain": "ICT_UI",
+                "file_path": "component/buttons/",
+                "name": "危险按钮",
+                "description": "红色危险操作按钮组件",
+                "tags": ["基础", "按钮", "危险"]
+              }
+            }
+          ]
+        },
+        {
+          "nid": 22,
+          "tag": "div",
+          "rect": { "x": 20, "y": 388, "w": 335, "h": 24 },
+          "text": "偏好设置",
+          "layerType": "text",
+          "layerName": "偏好分组标题",
+          "layerDescription": "偏好相关设置的分组标题文字",
+          "style": { "fontFamily": "PingFang SC", "fontSize": "14px", "fontWeight": "600", "color": "rgb(100,100,100)" }
+        },
+        {
+          "nid": 23,
+          "tag": "div",
+          "rect": { "x": 20, "y": 420, "w": 335, "h": 112 },
+          "layerType": "frame",
+          "layerName": "偏好设置卡片",
+          "layerDescription": "包含通知开关和深色模式选择两个设置项的卡片容器",
+          "style": {
+            "backgroundColor": "rgb(255,255,255)",
+            "borderRadius": "12px",
+            "boxShadow": "0px 2px 8px rgba(0,0,0,0.08)"
+          },
+          "children": [
+            {
+              "nid": 24,
+              "tag": "div",
+              "rect": { "x": 32, "y": 432, "w": 311, "h": 48 },
+              "layerType": "frame",
+              "layerName": "通知设置项",
+              "layerDescription": "用于开启或关闭应用通知的开关设置项行",
+              "style": { "display": "flex", "alignItems": "center", "justifyContent": "space-between" },
+              "children": [
+                {
+                  "nid": 25,
+                  "tag": "span",
+                  "rect": { "x": 32, "y": 444, "w": 80, "h": 24 },
+                  "text": "通知",
+                  "layerType": "text",
+                  "layerName": "通知文字",
+                  "layerDescription": "显示「通知」的设置项文字",
+                  "style": { "fontFamily": "PingFang SC", "fontSize": "16px", "color": "rgb(26,26,26)" }
+                },
+                {
+                  "nid": 26,
+                  "tag": "div",
+                  "rect": { "x": 295, "y": 444, "w": 48, "h": 24 },
+                  "layerType": "component",
+                  "layerName": "通知开关",
+                  "layerDescription": "控制通知开启/关闭状态的开关组件，当前为开启状态",
+                  "style": {},
+                  "resourceType": "component",
+                  "resourceId": "comp_switch_on_002",
+                  "resourceVectorText": "开关 基础类 normal 可用 开启",
+                  "resourceScore": 0.87,
+                  "resourceDetail": {
+                    "cv_component_name": "开关",
+                    "cv_canvas_name": "1.基础类",
+                    "cv_variant_name": "size=normal, toggled=true, disabled=false",
+                    "cv_component_key": "switch-base-key",
+                    "cv_variant_key": "comp_switch_on_002",
+                    "cv_variant_guid": "8229:44686",
+                    "cv_domain": "ICT_UI",
+                    "file_path": "component/switches/",
+                    "name": "开关-开启",
+                    "description": "基础开关组件，当前为开启状态",
+                    "tags": ["基础", "开关"]
+                  }
+                }
+              ]
+            },
+            {
+              "nid": 27,
+              "tag": "div",
+              "rect": { "x": 32, "y": 480, "w": 311, "h": 48 },
+              "layerType": "frame",
+              "layerName": "深色模式设置项",
+              "layerDescription": "用于切换深色模式的设置项行",
+              "style": { "display": "flex", "alignItems": "center", "justifyContent": "space-between" },
+              "children": [
+                {
+                  "nid": 28,
+                  "tag": "span",
+                  "rect": { "x": 32, "y": 492, "w": 80, "h": 24 },
+                  "text": "深色模式",
+                  "layerType": "text",
+                  "layerName": "深色模式文字",
+                  "layerDescription": "显示「深色模式」的设置项文字",
+                  "style": { "fontFamily": "PingFang SC", "fontSize": "16px", "color": "rgb(26,26,26)" }
+                },
+                {
+                  "nid": 29,
+                  "tag": "div",
+                  "rect": { "x": 263, "y": 492, "w": 48, "h": 24 },
+                  "layerType": "component",
+                  "layerName": "深色模式开关",
+                  "layerDescription": "控制深色模式开启/关闭状态的开关组件，当前为关闭状态",
+                  "style": {},
+                  "resourceType": "component",
+                  "resourceId": "comp_switch_off_003",
+                  "resourceVectorText": "开关 基础类 normal 可用 关闭",
+                  "resourceScore": 0.86,
+                  "resourceDetail": {
+                    "cv_component_name": "开关",
+                    "cv_canvas_name": "1.基础类",
+                    "cv_variant_name": "size=normal, toggled=false, disabled=false",
+                    "cv_component_key": "switch-base-key",
+                    "cv_variant_key": "comp_switch_off_003",
+                    "cv_variant_guid": "8229:44687",
+                    "cv_domain": "ICT_UI",
+                    "file_path": "component/switches/",
+                    "name": "开关-关闭",
+                    "description": "基础开关组件，当前为关闭状态",
+                    "tags": ["基础", "开关"]
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "nid": 30,
+      "tag": "div",
+      "rect": { "x": 20, "y": 548, "w": 335, "h": 160 },
+      "layerType": "frame",
+      "layerName": "装饰插图卡片",
+      "layerDescription": "展示品牌插画装饰的卡片区域",
+      "style": { "borderRadius": "12px", "overflow": "hidden" },
+      "children": [
+        {
+          "nid": 31,
+          "tag": "img",
+          "rect": { "x": 20, "y": 548, "w": 335, "h": 160 },
+          "src": "/illus/settings-decoration.svg",
+          "alt": "装饰插画",
+          "naturalWidth": 335,
+          "naturalHeight": 160,
+          "loaded": true,
+          "layerType": "illus",
+          "layerName": "设置页装饰插画",
+          "layerDescription": "设置页面底部展示的品牌装饰插画",
+          "resourceType": "illus",
+          "resourceId": "illus_decor_001",
+          "resourceVectorText": "装饰 品牌插画 settings 设置",
+          "resourceScore": 0.78,
+          "resourceDetail": {
+            "illus_id": "illus_decor_001",
+            "illus_category": "品牌装饰",
+            "illus_tags": ["装饰", "品牌", "设置"],
+            "illus_version": "2.1",
+            "file_path": "illus/settings-decoration.svg",
+            "name": "设置页装饰插画"
+          },
+          "style": {}
+        }
+      ]
+    },
+    {
+      "nid": 32,
+      "tag": "div",
+      "rect": { "x": 20, "y": 720, "w": 335, "h": 24 },
+      "layerType": "text",
+      "layerName": "版本号文字",
+      "layerDescription": "显示应用版本号「v2.0.1」的底部文字",
+      "style": { "fontFamily": "PingFang SC", "fontSize": "12px", "color": "rgb(150,150,150)", "textAlign": "center" },
+      "text": "v2.0.1"
+    },
+    {
+      "nid": 33,
+      "tag": "div",
+      "rect": { "x": 0, "y": 746, "w": 375, "h": 66, "fixed": true },
+      "layerType": "frame",
+      "layerName": "底部标签栏",
+      "layerDescription": "固定在页面底部的导航标签栏，用于在多个主页面之间切换",
+      "style": {
+        "display": "flex",
+        "justifyContent": "space-around",
+        "alignItems": "center",
+        "position": "fixed",
+        "bottom": "0px",
+        "zIndex": "100",
+        "backgroundColor": "rgb(255,255,255)",
+        "boxShadow": "0px -1px 0px rgba(0,0,0,0.06)"
+      },
+      "children": [
+        {
+          "nid": 34,
+          "tag": "div",
+          "rect": { "x": 0, "y": 752, "w": 75, "h": 58 },
+          "layerType": "frame",
+          "layerName": "首页标签",
+          "layerDescription": "首页导航标签，包含图标和文字",
+          "style": {},
+          "children": [
+            {
+              "nid": 35,
+              "tag": "span",
+              "rect": { "x": 25, "y": 752, "w": 24, "h": 24 },
+              "layerType": "icon",
+              "layerName": "首页图标",
+              "layerDescription": "首页标签的首页导航图标，24×24 细线",
+              "style": { "fontSize": "24px", "color": "rgb(52,120,246)" },
+              "resourceType": "icon",
+              "resourceId": "icon_home_005",
+              "resourceVectorText": "首页 home 主页 navigation 房子图标",
+              "resourceScore": 0.89,
+              "resourceDetail": {
+                "icon_id": "icon_home_005",
+                "name": "首页",
+                "chineseName": "首页",
+                "englishName": "home",
+                "description": "首页导航图标，用于标签栏首页入口",
+                "category": "基础图标",
+                "group": "导航",
+                "icon_file_type": "svg",
+                "icon_content": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path d=\"M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z\" fill=\"currentColor\"/></svg>"
+              }
+            },
+            {
+              "nid": 36,
+              "tag": "span",
+              "rect": { "x": 18, "y": 780, "w": 40, "h": 12 },
+              "text": "首页",
+              "layerType": "text",
+              "layerName": "首页标签文字",
+              "layerDescription": "首页标签下方显示的文字「首页」",
+              "style": { "fontFamily": "PingFang SC", "fontSize": "10px", "textAlign": "center", "color": "rgb(52,120,246)" }
+            }
+          ]
+        },
+        {
+          "nid": 37,
+          "tag": "div",
+          "rect": { "x": 75, "y": 752, "w": 75, "h": 58 },
+          "layerType": "frame",
+          "layerName": "发现标签",
+          "layerDescription": "发现导航标签，包含图标和文字",
+          "style": {},
+          "children": [
+            {
+              "nid": 38,
+              "tag": "span",
+              "rect": { "x": 100, "y": 752, "w": 24, "h": 24 },
+              "layerType": "icon",
+              "layerName": "发现图标（LLM臆想）",
+              "layerDescription": "发现标签的探索导航图标，24×24 细线",
+              "style": { "fontSize": "24px", "color": "rgb(153,153,153)" },
+              "resourceType": "icon",
+              "resourceId": "FAKE_ICON_FABRICATED",
+              "resourceVectorText": "发现 explore 搜索 exploration",
+              "resourceScore": 0.95,
+              "resourceDetail": {
+                "icon_id": "FAKE_ICON_FABRICATED",
+                "name": "发现",
+                "chineseName": "发现",
+                "englishName": "explore",
+                "description": "LLM臆造的发现图标，icon_id不存在于真实API返回中",
+                "category": "基础图标",
+                "group": "导航",
+                "icon_file_type": "svg",
+                "icon_content": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><circle cx=\"12\" cy=\"12\" r=\"10\" fill=\"none\" stroke=\"currentColor\"/><path d=\"M12 8v4l3 3\" stroke=\"currentColor\"/></svg>"
+              }
+            },
+            {
+              "nid": 39,
+              "tag": "span",
+              "rect": { "x": 93, "y": 780, "w": 40, "h": 12 },
+              "text": "发现",
+              "layerType": "text",
+              "layerName": "发现标签文字",
+              "layerDescription": "发现标签下方显示的文字「发现」",
+              "style": { "fontFamily": "PingFang SC", "fontSize": "10px", "textAlign": "center", "color": "rgb(153,153,153)" }
+            }
+          ]
+        },
+        {
+          "nid": 40,
+          "tag": "div",
+          "rect": { "x": 150, "y": 750, "w": 75, "h": 58 },
+          "layerType": "frame",
+          "layerName": "消息标签",
+          "layerDescription": "消息导航标签，包含图标和文字",
+          "style": {},
+          "children": [
+            {
+              "nid": 41,
+              "tag": "img",
+              "rect": { "x": 168, "y": 756, "w": 40, "h": 40 },
+              "src": "/images/msg-bg.png",
+              "alt": "消息背景图",
+              "naturalWidth": 40,
+              "naturalHeight": 40,
+              "loaded": true,
+              "layerType": "image",
+              "layerName": "消息图标背景图",
+              "layerDescription": "消息标签图标底部的背景装饰图片",
+              "resourceType": "image",
+              "resourceId": "img_msg_bg_003",
+              "resourceVectorText": "消息 背景 消息图标装饰 message",
+              "resourceScore": 0.72,
+              "resourceDetail": {
+                "file_path": "images/msg-bg.png",
+                "name": "消息背景图",
+                "description": "消息标签的背景装饰图片"
+              },
+              "style": {}
+            }
+          ]
+        },
+        {
+          "nid": 42,
+          "tag": "div",
+          "rect": { "x": 300, "y": 752, "w": 75, "h": 58 },
+          "layerType": "frame",
+          "layerName": "我的标签",
+          "layerDescription": "我的导航标签，包含图标和文字",
+          "style": {},
+          "children": [
+            {
+              "nid": 43,
+              "tag": "div",
+              "rect": { "x": 319, "y": 756, "w": 36, "h": 36 },
+              "layerType": "component",
+              "layerName": "我的图标组件（臆想）",
+              "layerDescription": "我的标签中使用的设计组件图标",
+              "style": { "borderRadius": "50%" },
+              "resourceType": "component",
+              "resourceId": "FAKE_COMP_FABRICATED",
+              "resourceVectorText": "图标 我的 个人 profile component",
+              "resourceScore": 0.96,
+              "resourceDetail": {
+                "cv_component_name": "个人图标",
+                "cv_canvas_name": "1.图标类",
+                "cv_variant_name": "size=36, style=circle",
+                "cv_component_key": "fake-profile-icon-key",
+                "cv_variant_key": "FAKE_COMP_FABRICATED",
+                "cv_variant_guid": "9999:99999",
+                "cv_domain": "ICT_UI",
+                "file_path": "component/profile-icons/",
+                "name": "个人图标（臆造）",
+                "description": "LLM臆造的组件，data_id不存在于真实API返回中",
+                "tags": ["臆造", "图标"]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

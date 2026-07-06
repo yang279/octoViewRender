@@ -19,6 +19,56 @@ export type LayerType =
   | 'text'
   | 'icon'
   | 'component'
+  | 'rectangle'
+
+export type ResourceType = 'component' | 'icon' | 'illus' | 'image'
+
+export interface ComponentResourceDetail {
+  cv_component_name: string
+  cv_canvas_name: string
+  cv_variant_name: string
+  cv_component_key: string
+  cv_variant_key: string
+  cv_variant_guid: string
+  cv_domain: string
+  file_path: string
+  name: string
+  description: string
+  tags: string[]
+}
+
+export interface IconResourceDetail {
+  icon_id: string
+  name: string
+  chineseName: string
+  englishName: string
+  description: string
+  category: string
+  group: string
+  icon_file_type: 'svg' | 'png'
+  icon_content: string
+}
+
+export interface IllusResourceDetail {
+  illus_id: string
+  illus_category: string
+  illus_tags: string[]
+  illus_version: string
+  file_path: string
+  name: string
+}
+
+export interface ImageResourceDetail {
+  file_path: string
+  name: string
+  description: string
+}
+
+export type ResourceDetail =
+  | ComponentResourceDetail
+  | IconResourceDetail
+  | IllusResourceDetail
+  | ImageResourceDetail
 
 export interface DslNode {
   nid: number
@@ -40,6 +90,10 @@ export interface DslNode {
   naturalWidth?: number
   naturalHeight?: number
   loaded?: boolean
-  passthrough?: boolean
+  resourceType?: ResourceType
+  resourceId?: string
+  resourceVectorText?: string
+  resourceScore?: number
+  resourceDetail?: ResourceDetail
   children?: DslNode[]
 }

@@ -63,7 +63,7 @@ export interface DesignDslDropShadow {
 
 export type DesignDslEffect = DesignDslDropShadow
 
-export interface DesignDslPlaceholder {
+export interface PlaceholderMeta {
   is_placeholder: true
   replacement_type: 'svg' | 'image'
   note: string
@@ -139,7 +139,7 @@ export interface DesignDslFrameOrRectLayer {
   corner_radius?: number
   corner_radii?: [number, number, number, number]
   auto_layout?: DesignDslAutoLayout
-  placeholder?: DesignDslPlaceholder
+  placeholder?: PlaceholderMeta
   children?: DesignDslLayer[]
   layout_grow?: number
   layout_align?: 'stretch' | 'center' | 'max' | 'min' | 'inherit'

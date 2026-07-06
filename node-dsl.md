@@ -37,6 +37,11 @@ Node | Node[]
 | `naturalWidth` | number | 否 | img 原始宽度（px）|
 | `naturalHeight` | number | 否 | img 原始高度（px）|
 | `loaded` | boolean | 否 | img 是否加载成功 |
+| `resourceType` | string | layerType 为 component/icon/illus/image 时必选 | 资源类型语义标记：`component` / `icon` / `illus` / `image`。component/illus/image 对应向量搜索 API 的 `type` 参数；icon 走独立 iconPlus API |
+| `resourceId` | string | 同上必选 | 向量搜索 API 返回的 `data_id`，唯一标识一个设计资源 |
+| `resourceVectorText` | string | 同上必选 | `/search/llm` 返回的 `vector_text`，包含资源核心信息（名称、类别、属性等） |
+| `resourceScore` | number | 同上可选 | `/search/llm` 返回的 `score`，表示匹配置信度（0-1），值越高越匹配 |
+| `resourceDetail` | ResourceDetail | 同上必选 | 完整资源数据，结构按 `resourceType` 不同而不同。component/illus/image 来自向量搜索 `/detail` API；icon 来自 iconPlus API（getIconInfo + getSvg 合并），见 [ResourceDetail](#resourcedetail) |
 | `children` | Node[] | 否 | 子节点列表（有子节点时输出）|
 
 ---
@@ -153,6 +158,63 @@ Node | Node[]
 
 > ⛔ `text` / `icon` / `component` / `rectangle` 节点**不得有 `children` 字段**，其内部结构由组件系统管理，不在 node-dsl 中展开。
 
+> 🔗 `component` / `icon` / `illus` / `image` 节点**必须包含资源绑定字段**（`resourceType` / `resourceId` / `resourceVectorText` / `resourceDetail`），用于关联真实设计资源。component/illus/image 通过向量搜索 API 匹配；icon 通过 iconPlus 三步 API 匹配。`frame` / `text` / `rectangle` 节点不得有资源绑定字段。
+
+---
+
+## ResourceDetail
+
+`resourceDetail` 的结构按 `resourceType` 不同而不同：
+
+### component（type=component）
+
+| 字段 | 说明 |
+|---|---|
+| `cv_component_name` | 组件集名称 |
+| `cv_canvas_name` | 组件类别 |
+| `cv_variant_name` | 变体属性 |
+| `cv_component_key` | 组件 Key |
+| `cv_variant_key` | 变体 Key |
+| `cv_variant_guid` | 变体 GUID，格式 `"sessionID:localID"` |
+| `cv_domain` | 组件所属域/命名空间，如 `"ICT_UI"` |
+| `file_path` | 文件路径 |
+| `name` | 资源名称 |
+| `description` | 描述文本 |
+| `tags` | 标签列表 |
+
+### icon（type=icon，字段来自 iconPlus API 的 getIconInfo + getSvg 合并）
+
+| 字段 | 说明 |
+|---|---|
+| `icon_id` | 图标原始 ID（来自 getIconInfo） |
+| `name` | 图标名称（来自 getIconInfo） |
+| `chineseName` | 中文名（来自 getIconInfo） |
+| `englishName` | 英文名（来自 getIconInfo） |
+| `description` | 描述（来自 getIconInfo） |
+| `category` | 分类（来自 getIconInfo） |
+| `group` | 分组（来自 getIconInfo） |
+| `icon_file_type` | 文件类型 "svg" 或 "png"（来自 getSvg 请求的 fileType） |
+| `icon_content` | 图标内容：SVG 标签字符串（fileType=svg）或 base64 数据（fileType=png），来自 getSvg 返回 |
+
+### illus（type=illus）
+
+| 字段 | 说明 |
+|---|---|
+| `illus_id` | 插画原始 ID |
+| `illus_category` | 分类 |
+| `illus_tags` | 标签列表 |
+| `illus_version` | 版本号 |
+| `file_path` | 文件路径 |
+| `name` | 资源名称 |
+
+### image（type=image）
+
+| 字段 | 说明 |
+|---|---|
+| `file_path` | 文件路径 |
+| `name` | 资源名称 |
+| `description` | 描述文本 |
+
 ---
 
 ## 完整示例
@@ -196,7 +258,22 @@ Node | Node[]
           "layerType": "icon",
           "layerName": "返回图标",
           "layerDescription": "点击后返回上一页的图标，24×24 细线",
-          "style": { "fontSize": "24px" }
+          "style": { "fontSize": "24px" },
+          "resourceType": "icon",
+          "resourceId": "123",
+          "resourceVectorText": "navigation 返回 back arrow 左箭头图标",
+          "resourceScore": 0.92,
+          "resourceDetail": {
+            "icon_id": "123",
+            "name": "返回",
+            "chineseName": "返回",
+            "englishName": "back",
+            "description": "返回上一页",
+            "category": "基础图标",
+            "group": "通用",
+            "icon_file_type": "svg",
+            "icon_content": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\">...</svg>"
+          }
         },
         {
           "nid": 6,
@@ -241,6 +318,15 @@ Node | Node[]
           "layerType": "image",
           "layerName": "用户头像",
           "layerDescription": "登录表单顶部展示的默认用户头像图片",
+          "resourceType": "image",
+          "resourceId": "456",
+          "resourceVectorText": "头像 默认 用户 avatar",
+          "resourceScore": 0.85,
+          "resourceDetail": {
+            "file_path": "images/avatar-default.png",
+            "name": "默认头像",
+            "description": "通用默认用户头像"
+          },
           "style": {
             "borderRadius": "50%",
             "imageData": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAFAAAABQCAYAAACOEfKtAAAA..."
@@ -272,7 +358,24 @@ Node | Node[]
               "layerType": "component",
               "layerName": "用户名 input",
               "layerDescription": "用户名输入框的原生 input 元素，placeholder 提示「请输入用户名」",
-              "style": { "fontFamily": "PingFang SC", "fontSize": "16px", "color": "rgb(26,26,26)", "flexGrow": "1" }
+              "style": { "fontFamily": "PingFang SC", "fontSize": "16px", "color": "rgb(26,26,26)", "flexGrow": "1" },
+              "resourceType": "component",
+              "resourceId": "abc123def456",
+              "resourceVectorText": "输入框 表单类 medium 正常 启用",
+              "resourceScore": 0.88,
+              "resourceDetail": {
+                "cv_component_name": "输入框",
+                "cv_canvas_name": "1.表单类",
+                "cv_variant_name": "size=medium, disabled=false",
+                "cv_component_key": "input-field-key",
+                "cv_variant_key": "abc123def456",
+                "cv_variant_guid": "8229:12345",
+                "cv_domain": "ICT_UI",
+                "file_path": "component/input-fields/",
+                "name": "输入框",
+                "description": "表单输入框组件",
+                "tags": ["表单", "输入"]
+              }
             }
           ]
         },
@@ -295,6 +398,23 @@ Node | Node[]
             "fontSize": "16px",
             "fontWeight": "600",
             "color": "rgb(255,255,255)"
+          },
+          "resourceType": "component",
+          "resourceId": "xyz789ghi012",
+          "resourceVectorText": "按钮 基础类 normal 可用 主要",
+          "resourceScore": 0.95,
+          "resourceDetail": {
+            "cv_component_name": "按钮",
+            "cv_canvas_name": "1.基础类",
+            "cv_variant_name": "size=normal, type=primary, disabled=false",
+            "cv_component_key": "button-primary-key",
+            "cv_variant_key": "xyz789ghi012",
+            "cv_variant_guid": "8229:67890",
+            "cv_domain": "ICT_UI",
+            "file_path": "component/buttons/",
+            "name": "主要按钮",
+            "description": "基础主要按钮组件",
+            "tags": ["基础", "按钮"]
           }
         },
 

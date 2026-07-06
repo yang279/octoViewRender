@@ -4,7 +4,7 @@ import { ElSelect, ElOption, ElInput } from 'element-plus'
 import type { DslNode, LayerType } from '@/types/dsl'
 import { useDslStore } from '@/stores/dsl'
 
-const LAYER_OPTIONS: LayerType[] = ['frame', 'component', 'text', 'image', 'icon']
+const LAYER_OPTIONS: LayerType[] = ['frame', 'component', 'text', 'image', 'icon', 'rectangle']
 
 interface Position { x: number; y: number }
 

@@ -4,13 +4,20 @@ import type {
   DesignDslFill,
   DesignDslStroke,
   DesignDslEffect,
-  DesignDslPlaceholder,
+  PlaceholderMeta,
   DesignDslTextStyle,
   DesignDslAutoLayout,
   DesignDslLayer,
   DesignDslInstance,
   LayerStats,
 } from '@/types/design-dsl'
+import type {
+  ResourceType,
+  ComponentResourceDetail,
+  IconResourceDetail,
+  IllusResourceDetail,
+  ImageResourceDetail,
+} from '@/types/dsl'
 
 interface NodeDslRect {
   x: number
@@ -19,25 +26,31 @@ interface NodeDslRect {
   h: number
 }
 
-interface NodeDslComponent {
-  componentKey?: string
-  path?: string
-  variant?: {
-    guid?: string
-    variantKey?: string
-  }
-}
-
 interface NodeDslNode {
   nid: number
   tag?: string
-  label?: string
   layerName?: string
+  layerDescription?: string
   layerType?: string
+  layerConfidence?: string
   rect?: NodeDslRect
   text?: string
   style?: Record<string, string>
-  component?: NodeDslComponent
+  id?: string
+  class?: string
+  attrs?: Record<string, unknown>
+  src?: string
+  alt?: string
+  href?: string
+  type?: string
+  naturalWidth?: number
+  naturalHeight?: number
+  loaded?: boolean
+  resourceType?: ResourceType
+  resourceId?: string
+  resourceVectorText?: string
+  resourceScore?: number
+  resourceDetail?: ComponentResourceDetail | IconResourceDetail | IllusResourceDetail | ImageResourceDetail
   children?: NodeDslNode[]
 }
 
@@ -191,10 +204,33 @@ function buildChildLayout(style: Record<string, string>): { layout_grow?: number
   return out
 }
 
-function buildPlaceholder(style: Record<string, string>): DesignDslPlaceholder | null {
+function buildLegacyPlaceholder(style: Record<string, string>): PlaceholderMeta | null {
   if (style.svgContent) return { is_placeholder: true, replacement_type: 'svg', note: style.svgContent }
   if (style.imageData)  return { is_placeholder: true, replacement_type: 'image', note: style.imageData }
   return null
+}
+
+function buildPlaceholderMeta(style: Record<string, string>, node: NodeDslNode): PlaceholderMeta | null {
+  const detail = node.resourceDetail
+  if (!detail) return buildLegacyPlaceholder(style)
+
+  const resourceType = node.resourceType
+  let replacementType: 'svg' | 'image' = 'image'
+  let note = style.svgContent || style.imageData || ''
+  switch (resourceType) {
+    case 'icon': {
+      const d = detail as IconResourceDetail
+      replacementType = d.icon_file_type === 'png' ? 'image' : 'svg'
+      if (d.icon_content) note = d.icon_content
+      break
+    }
+  }
+
+  return {
+    is_placeholder: true,
+    replacement_type: replacementType,
+    note,
+  }
 }
 
 type VisualProps = {
@@ -237,7 +273,7 @@ function makeBase(node: NodeDslNode, parentRect: NodeDslRect): BaseLayer {
   const opacity = !isNaN(opacityRaw) ? opacityRaw : 1
   return {
     id: nidToId(node.nid),
-    name: node.layerName || node.label || `${node.tag || 'node'}-${node.nid}`,
+    name: node.layerName || `${node.tag || 'node'}-${node.nid}`,
     visible: true,
     opacity,
     blend_mode: 'normal',
@@ -258,27 +294,31 @@ function convertNode(node: NodeDslNode, parentRect: NodeDslRect): DesignDslLayer
   const r: NodeDslRect = node.rect || { x: 0, y: 0, w: 0, h: 0 }
   const base = makeBase(node, parentRect)
 
-  if (node.component && node.layerType === 'component') {
-    const comp = node.component
+  if (node.layerType === 'component' && node.resourceDetail && node.resourceType === 'component') {
+    const detail = node.resourceDetail as ComponentResourceDetail
     return {
       ...base,
       type: 'instance',
       instance: {
-        symbol_id:              comp.variant?.guid       || '',
-        variant_key:            comp.variant?.variantKey || '',
-        component_set_key:      comp.componentKey        || '',
+        symbol_id:              detail.cv_variant_guid,
+        variant_key:            detail.cv_variant_key,
+        component_set_key:      detail.cv_component_key || detail.cv_variant_key,
         component_set_resolved: false,
-        path:                   comp.path                || '',
+        path:                   detail.file_path || '',
       } as DesignDslInstance,
     }
   }
 
   if (node.layerType === 'component') {
-    return { ...base, type: 'rectangle', ...buildVisualProps(style) } as DesignDslLayer
+    const ph = buildPlaceholderMeta(style, node)
+    return {
+      ...base, type: 'rectangle', ...buildVisualProps(style),
+      ...(ph ? { placeholder: ph } : {}),
+    } as DesignDslLayer
   }
 
   if (node.layerType === 'icon') {
-    const ph = buildPlaceholder(style)
+    const ph = buildPlaceholderMeta(style, node)
     return {
       ...base, type: 'rectangle', ...buildVisualProps(style),
       ...(ph ? { placeholder: ph } : {}),
@@ -291,9 +331,9 @@ function convertNode(node: NodeDslNode, parentRect: NodeDslRect): DesignDslLayer
 
   if (node.layerType === 'image') {
     const hasKids = (node.children || []).length > 0
-    const ph = buildPlaceholder(style)
+    const ph = buildPlaceholderMeta(style, node)
     if (!hasKids) {
-      return { ...base, type: 'rectangle', ...(ph ? { placeholder: ph } : {}) } as DesignDslLayer
+      return { ...base, type: 'rectangle', ...(ph ? { placeholder: ph } : {}), ...buildVisualProps(style) } as DesignDslLayer
     }
     const kids = filterKids(node)
     return {
