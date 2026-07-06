@@ -4,8 +4,8 @@
     "source": "node-dsl",
     "file_id": "",
     "file_name": "设置页",
-    "created_at": "2026-07-06T01:16:55.551Z",
-    "updated_at": "2026-07-06T01:16:55.551Z"
+    "created_at": "2026-07-06T07:11:45.003Z",
+    "updated_at": "2026-07-06T07:11:45.003Z"
   },
   "pages": [
     {
@@ -14,7 +14,7 @@
       "layers": [
         {
           "id": "1:1",
-          "name": "设置页根容器",
+          "name": "首页根容器",
           "visible": true,
           "opacity": 1,
           "blend_mode": "normal",
@@ -91,7 +91,7 @@
                   0
                 ],
                 "align_items": "center",
-                "justify_content": "min",
+                "justify_content": "space_evenly",
                 "wrap": false
               },
               "children": [
@@ -111,7 +111,7 @@
                   "placeholder": {
                     "is_placeholder": true,
                     "replacement_type": "svg",
-                    "note": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path d=\"M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z\" fill=\"currentColor\"/></svg>"
+                    "note": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path d=\"M15 4l-8 8 8 8\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"/></svg>"
                   }
                 },
                 {
@@ -127,7 +127,7 @@
                     "height": 32
                   },
                   "type": "text",
-                  "text_content": "设置",
+                  "text_content": "首页",
                   "text_style": {
                     "font_family": "PingFang SC",
                     "font_style": "SemiBold",
@@ -138,20 +138,81 @@
                     "align_v": "center",
                     "color": "#1A1A1AFF"
                   }
+                },
+                {
+                  "id": "1:5",
+                  "name": "设置图标",
+                  "visible": true,
+                  "opacity": 1,
+                  "blend_mode": "normal",
+                  "box": {
+                    "x": 335,
+                    "y": 16,
+                    "width": 24,
+                    "height": 24
+                  },
+                  "type": "rectangle",
+                  "placeholder": {
+                    "is_placeholder": true,
+                    "replacement_type": "svg",
+                    "note": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><circle cx=\"12\" cy=\"12\" r=\"3\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"/><path d=\"M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9c.26.6.77 1.02 1.51 1z\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"/></svg>"
+                  }
                 }
               ]
             },
             {
-              "id": "1:5",
-              "name": "用户信息卡片",
+              "id": "1:6",
+              "name": "导航栏分割线",
+              "visible": true,
+              "opacity": 1,
+              "blend_mode": "normal",
+              "box": {
+                "x": 0,
+                "y": 56,
+                "width": 375,
+                "height": 1
+              },
+              "type": "rectangle",
+              "fills": [
+                {
+                  "type": "solid",
+                  "visible": true,
+                  "opacity": 1,
+                  "color": "#E5E5E5FF"
+                }
+              ]
+            },
+            {
+              "id": "1:7",
+              "name": "促销横幅",
               "visible": true,
               "opacity": 1,
               "blend_mode": "normal",
               "box": {
                 "x": 20,
-                "y": 68,
+                "y": 76,
                 "width": 335,
-                "height": 80
+                "height": 120
+              },
+              "type": "rectangle",
+              "placeholder": {
+                "is_placeholder": true,
+                "replacement_type": "image",
+                "note": ""
+              },
+              "corner_radius": 12
+            },
+            {
+              "id": "1:8",
+              "name": "登录表单卡片",
+              "visible": true,
+              "opacity": 1,
+              "blend_mode": "normal",
+              "box": {
+                "x": 20,
+                "y": 216,
+                "width": 335,
+                "height": 280
               },
               "type": "frame",
               "fills": [
@@ -167,129 +228,13 @@
                   "type": "drop_shadow",
                   "visible": true,
                   "offset_x": 0,
-                  "offset_y": 2,
-                  "blur": 8,
+                  "offset_y": 8,
+                  "blur": 24,
                   "spread": 0,
-                  "color": "#00000014"
+                  "color": "#0000001A"
                 }
               ],
-              "corner_radius": 12,
-              "auto_layout": {
-                "direction": "horizontal",
-                "gap": 12,
-                "counter_gap": 0,
-                "padding": [
-                  0,
-                  0,
-                  0,
-                  0
-                ],
-                "align_items": "center",
-                "justify_content": "min",
-                "wrap": false
-              },
-              "children": [
-                {
-                  "id": "1:6",
-                  "name": "用户头像",
-                  "visible": true,
-                  "opacity": 1,
-                  "blend_mode": "normal",
-                  "box": {
-                    "x": 12,
-                    "y": 16,
-                    "width": 48,
-                    "height": 48
-                  },
-                  "type": "rectangle",
-                  "placeholder": {
-                    "is_placeholder": true,
-                    "replacement_type": "image",
-                    "note": ""
-                  },
-                  "corner_radius": 50
-                },
-                {
-                  "id": "1:7",
-                  "name": "用户名文字",
-                  "visible": true,
-                  "opacity": 1,
-                  "blend_mode": "normal",
-                  "box": {
-                    "x": 72,
-                    "y": 32,
-                    "width": 80,
-                    "height": 20
-                  },
-                  "type": "text",
-                  "text_content": "张三",
-                  "text_style": {
-                    "font_family": "PingFang SC",
-                    "font_style": "Medium",
-                    "font_size": 16,
-                    "letter_spacing": 0,
-                    "line_height": "auto",
-                    "align_h": "left",
-                    "align_v": "center",
-                    "color": "#1A1A1AFF"
-                  }
-                },
-                {
-                  "id": "1:8",
-                  "name": "右箭头图标",
-                  "visible": true,
-                  "opacity": 1,
-                  "blend_mode": "normal",
-                  "box": {
-                    "x": 275,
-                    "y": 28,
-                    "width": 24,
-                    "height": 24
-                  },
-                  "type": "rectangle",
-                  "placeholder": {
-                    "is_placeholder": true,
-                    "replacement_type": "svg",
-                    "note": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path d=\"M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z\" fill=\"currentColor\"/></svg>"
-                  }
-                }
-              ]
-            },
-            {
-              "id": "1:9",
-              "name": "分割线",
-              "visible": true,
-              "opacity": 1,
-              "blend_mode": "normal",
-              "box": {
-                "x": 0,
-                "y": 164,
-                "width": 375,
-                "height": 1
-              },
-              "type": "rectangle",
-              "fills": [
-                {
-                  "type": "solid",
-                  "visible": true,
-                  "opacity": 1,
-                  "color": "#E5E5E5FF"
-                }
-              ]
-            },
-            {
-              "id": "1:10",
-              "name": "设置列表容器",
-              "visible": true,
-              "opacity": 1,
-              "blend_mode": "normal",
-              "box": {
-                "x": 20,
-                "y": 180,
-                "width": 335,
-                "height": 400
-              },
-              "type": "frame",
+              "corner_radius": 16,
               "auto_layout": {
                 "direction": "vertical",
                 "gap": 16,
@@ -306,41 +251,36 @@
               },
               "children": [
                 {
-                  "id": "1:11",
-                  "name": "分组标题",
+                  "id": "1:9",
+                  "name": "用户头像",
                   "visible": true,
                   "opacity": 1,
                   "blend_mode": "normal",
                   "box": {
-                    "x": 0,
-                    "y": 0,
-                    "width": 335,
-                    "height": 24
+                    "x": 108,
+                    "y": 16,
+                    "width": 80,
+                    "height": 80
                   },
-                  "type": "text",
-                  "text_content": "账户与安全",
-                  "text_style": {
-                    "font_family": "PingFang SC",
-                    "font_style": "SemiBold",
-                    "font_size": 14,
-                    "letter_spacing": 0,
-                    "line_height": "auto",
-                    "align_h": "left",
-                    "align_v": "center",
-                    "color": "#646464FF"
-                  }
+                  "type": "rectangle",
+                  "placeholder": {
+                    "is_placeholder": true,
+                    "replacement_type": "image",
+                    "note": ""
+                  },
+                  "corner_radius": 50
                 },
                 {
-                  "id": "1:12",
-                  "name": "账户设置卡片",
+                  "id": "1:10",
+                  "name": "用户名输入框容器",
                   "visible": true,
                   "opacity": 1,
                   "blend_mode": "normal",
                   "box": {
                     "x": 0,
-                    "y": 32,
+                    "y": 112,
                     "width": 335,
-                    "height": 160
+                    "height": 48
                   },
                   "type": "frame",
                   "fills": [
@@ -348,491 +288,322 @@
                       "type": "solid",
                       "visible": true,
                       "opacity": 1,
-                      "color": "#FFFFFFFF"
+                      "color": "#FAFAFAFF"
                     }
                   ],
-                  "effects": [
+                  "strokes": [
                     {
-                      "type": "drop_shadow",
+                      "type": "solid",
                       "visible": true,
-                      "offset_x": 0,
-                      "offset_y": 2,
-                      "blur": 8,
-                      "spread": 0,
-                      "color": "#00000014"
+                      "opacity": 1,
+                      "color": "#E5E5E5FF"
                     }
                   ],
-                  "corner_radius": 12,
+                  "corner_radius": 8,
+                  "auto_layout": {
+                    "direction": "horizontal",
+                    "gap": 0,
+                    "counter_gap": 0,
+                    "padding": [
+                      0,
+                      0,
+                      0,
+                      0
+                    ],
+                    "align_items": "center",
+                    "justify_content": "min",
+                    "wrap": false
+                  },
                   "children": [
                     {
-                      "id": "1:13",
-                      "name": "个人信息设置项",
+                      "id": "1:11",
+                      "name": "搜索图标",
                       "visible": true,
                       "opacity": 1,
                       "blend_mode": "normal",
                       "box": {
-                        "x": 12,
-                        "y": 12,
-                        "width": 311,
-                        "height": 48
+                        "x": 16,
+                        "y": 16,
+                        "width": 20,
+                        "height": 20
                       },
-                      "type": "frame",
-                      "auto_layout": {
-                        "direction": "horizontal",
-                        "gap": 0,
-                        "counter_gap": 0,
-                        "padding": [
-                          0,
-                          0,
-                          0,
-                          0
-                        ],
-                        "align_items": "center",
-                        "justify_content": "space_evenly",
-                        "wrap": false
-                      },
-                      "children": [
-                        {
-                          "id": "1:14",
-                          "name": "用户图标",
-                          "visible": true,
-                          "opacity": 1,
-                          "blend_mode": "normal",
-                          "box": {
-                            "x": 0,
-                            "y": 12,
-                            "width": 24,
-                            "height": 24
-                          },
-                          "type": "rectangle",
-                          "placeholder": {
-                            "is_placeholder": true,
-                            "replacement_type": "image",
-                            "note": "iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAADDSURBVFhH7ZdbDoAwEARBQP//M9eipYQ0k7Hv+bnJmVgO7sQ2iD+E+ER4T4hPhCdK8KUIvybEm1J8KYKfUvGlCF9K8a0If0rxrgh/SvGtCH9K8a0If0rxrgh/SvGtCH9K8a0If0rxrgh/SvGtCH9K8a0If0rxrgh/SvGtCH9K8a0If0rxrgh/SvGtCH9K8a0If0rxrgh/SvGtCH9K8a0If0rxrgj5S+NTET4n5U+N+FOKTyX4U4pPJfhTik8l+FOKTyX4U4pPJfhTik/l+BORS0AAAP//AwBQSwECMAQA"
-                          }
-                        },
-                        {
-                          "id": "1:15",
-                          "name": "个人信息文字",
-                          "visible": true,
-                          "opacity": 1,
-                          "blend_mode": "normal",
-                          "box": {
-                            "x": 32,
-                            "y": 12,
-                            "width": 80,
-                            "height": 24
-                          },
-                          "type": "text",
-                          "text_content": "个人信息",
-                          "text_style": {
-                            "font_family": "PingFang SC",
-                            "font_style": "Regular",
-                            "font_size": 16,
-                            "letter_spacing": 0,
-                            "line_height": "auto",
-                            "align_h": "left",
-                            "align_v": "center",
-                            "color": "#1A1A1AFF"
-                          }
-                        },
-                        {
-                          "id": "1:16",
-                          "name": "右箭头图标",
-                          "visible": true,
-                          "opacity": 1,
-                          "blend_mode": "normal",
-                          "box": {
-                            "x": 287,
-                            "y": 12,
-                            "width": 24,
-                            "height": 24
-                          },
-                          "type": "rectangle",
-                          "placeholder": {
-                            "is_placeholder": true,
-                            "replacement_type": "svg",
-                            "note": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path d=\"M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z\" fill=\"currentColor\"/></svg>"
-                          }
-                        }
-                      ]
+                      "type": "rectangle",
+                      "placeholder": {
+                        "is_placeholder": true,
+                        "replacement_type": "svg",
+                        "note": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><circle cx=\"11\" cy=\"11\" r=\"7\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"/><path d=\"M21 21l-4.35-4.35\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"/></svg>"
+                      }
                     },
                     {
-                      "id": "1:17",
-                      "name": "修改密码设置项",
+                      "id": "1:12",
+                      "name": "用户名输入框",
                       "visible": true,
                       "opacity": 1,
                       "blend_mode": "normal",
                       "box": {
-                        "x": 12,
-                        "y": 60,
-                        "width": 311,
-                        "height": 48
+                        "x": 40,
+                        "y": 16,
+                        "width": 279,
+                        "height": 24
                       },
-                      "type": "frame",
-                      "auto_layout": {
-                        "direction": "horizontal",
-                        "gap": 0,
-                        "counter_gap": 0,
-                        "padding": [
-                          0,
-                          0,
-                          0,
-                          0
-                        ],
-                        "align_items": "center",
-                        "justify_content": "space_evenly",
-                        "wrap": false
-                      },
-                      "children": [
-                        {
-                          "id": "1:18",
-                          "name": "锁图标",
-                          "visible": true,
-                          "opacity": 1,
-                          "blend_mode": "normal",
-                          "box": {
-                            "x": 0,
-                            "y": 12,
-                            "width": 24,
-                            "height": 24
-                          },
-                          "type": "rectangle",
-                          "placeholder": {
-                            "is_placeholder": true,
-                            "replacement_type": "svg",
-                            "note": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path d=\"M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zM12 17c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zM9 8V6c0-1.66 1.34-3 3-3s3 1.34 3 3v2H9z\" fill=\"currentColor\"/></svg>"
-                          }
-                        },
-                        {
-                          "id": "1:19",
-                          "name": "修改密码文字",
-                          "visible": true,
-                          "opacity": 1,
-                          "blend_mode": "normal",
-                          "box": {
-                            "x": 32,
-                            "y": 12,
-                            "width": 80,
-                            "height": 24
-                          },
-                          "type": "text",
-                          "text_content": "修改密码",
-                          "text_style": {
-                            "font_family": "PingFang SC",
-                            "font_style": "Regular",
-                            "font_size": 16,
-                            "letter_spacing": 0,
-                            "line_height": "auto",
-                            "align_h": "left",
-                            "align_v": "center",
-                            "color": "#1A1A1AFF"
-                          }
-                        },
-                        {
-                          "id": "1:20",
-                          "name": "右箭头图标",
-                          "visible": true,
-                          "opacity": 1,
-                          "blend_mode": "normal",
-                          "box": {
-                            "x": 287,
-                            "y": 12,
-                            "width": 24,
-                            "height": 24
-                          },
-                          "type": "rectangle",
-                          "placeholder": {
-                            "is_placeholder": true,
-                            "replacement_type": "svg",
-                            "note": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path d=\"M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z\" fill=\"currentColor\"/></svg>"
-                          }
-                        }
-                      ]
-                    },
-                    {
-                      "id": "1:21",
-                      "name": "退出登录按钮",
-                      "visible": true,
-                      "opacity": 1,
-                      "blend_mode": "normal",
-                      "box": {
-                        "x": 12,
-                        "y": 108,
-                        "width": 311,
-                        "height": 48
-                      },
+                      "layout_grow": 1,
                       "type": "instance",
                       "instance": {
-                        "symbol_id": "8229:11223",
-                        "variant_key": "comp_btn_danger_001",
-                        "component_set_key": "button-danger-key",
+                        "symbol_id": "8229:12345",
+                        "variant_key": "comp_001",
+                        "component_set_key": "input-field-key",
                         "component_set_resolved": false,
-                        "path": "component/buttons/"
+                        "path": "component/input-fields/"
                       }
                     }
                   ]
                 },
                 {
-                  "id": "1:22",
-                  "name": "偏好分组标题",
+                  "id": "1:13",
+                  "name": "关闭图标",
                   "visible": true,
                   "opacity": 1,
                   "blend_mode": "normal",
                   "box": {
-                    "x": 0,
-                    "y": 208,
-                    "width": 335,
-                    "height": 24
+                    "x": 16,
+                    "y": 176,
+                    "width": 20,
+                    "height": 20
                   },
-                  "type": "text",
-                  "text_content": "偏好设置",
-                  "text_style": {
-                    "font_family": "PingFang SC",
-                    "font_style": "SemiBold",
-                    "font_size": 14,
-                    "letter_spacing": 0,
-                    "line_height": "auto",
-                    "align_h": "left",
-                    "align_v": "center",
-                    "color": "#646464FF"
+                  "type": "rectangle",
+                  "placeholder": {
+                    "is_placeholder": true,
+                    "replacement_type": "image",
+                    "note": "iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADthVQKAAABJElEQVR4nO2TP0tCQRTFv8/QC0v5C+9QeI0vULqEd1i4BDdY2ODsbGxsjI2xsLHxP8Kx8B6I3WFiY+Mj6CI6OTuJjp6ezc7MzCRI8sV+vKfT+5+T3POd+/2+b3KZbDYbZrNZLIvFYrn1ep3FYrEYr9fr8Xq9Hq/X6/F6vR6v1+vxer0er9fr8Xq9Hq/X6/F6vR6v1+vxer0er9fr8Xq9Hq/X6/F6vR6v16sxm83G2Ww2YbFYDovFYjAYjIaDweAwGAwGg8FgMBgMBoPBYDAYDAaDwWAwGAwGg8FgMBgMBoPBYDAYDAaDweAwm83G2Ww2Y7FYLBaLxWKxWCwWi8VisVgsFovFYrFYLBaLxWKxWCwWi8VisVgsFovFYrEYr9crMZvNxvl8vuVyuVgul4vFYrFYLBaLxWKxWCwWi8VisVgsFovFYrEYn9fr8Xq9Hq/X6/F6vR6v1+vxer0er9fr8Xq9Hq/X6/F6vR6v1+vxer0eZ7PZjPF4POVyudi8Xq/FYrEYn9cr8Xq9Hq/X6/F6vR6v1+vxer0er9fr8Xq9HgAOYRj2O+6b9gABNl2+KwAAAP//"
                   }
                 },
                 {
-                  "id": "1:23",
-                  "name": "偏好设置卡片",
+                  "id": "1:14",
+                  "name": "主登录按钮",
                   "visible": true,
                   "opacity": 1,
                   "blend_mode": "normal",
                   "box": {
-                    "x": 0,
-                    "y": 240,
-                    "width": 335,
-                    "height": 112
+                    "x": 24,
+                    "y": 224,
+                    "width": 295,
+                    "height": 48
                   },
-                  "type": "frame",
-                  "fills": [
-                    {
-                      "type": "solid",
-                      "visible": true,
-                      "opacity": 1,
-                      "color": "#FFFFFFFF"
-                    }
-                  ],
-                  "effects": [
-                    {
-                      "type": "drop_shadow",
-                      "visible": true,
-                      "offset_x": 0,
-                      "offset_y": 2,
-                      "blur": 8,
-                      "spread": 0,
-                      "color": "#00000014"
-                    }
-                  ],
-                  "corner_radius": 12,
-                  "children": [
-                    {
-                      "id": "1:24",
-                      "name": "通知设置项",
-                      "visible": true,
-                      "opacity": 1,
-                      "blend_mode": "normal",
-                      "box": {
-                        "x": 12,
-                        "y": 12,
-                        "width": 311,
-                        "height": 48
-                      },
-                      "type": "frame",
-                      "auto_layout": {
-                        "direction": "horizontal",
-                        "gap": 0,
-                        "counter_gap": 0,
-                        "padding": [
-                          0,
-                          0,
-                          0,
-                          0
-                        ],
-                        "align_items": "center",
-                        "justify_content": "space_evenly",
-                        "wrap": false
-                      },
-                      "children": [
-                        {
-                          "id": "1:25",
-                          "name": "通知文字",
-                          "visible": true,
-                          "opacity": 1,
-                          "blend_mode": "normal",
-                          "box": {
-                            "x": 0,
-                            "y": 12,
-                            "width": 80,
-                            "height": 24
-                          },
-                          "type": "text",
-                          "text_content": "通知",
-                          "text_style": {
-                            "font_family": "PingFang SC",
-                            "font_style": "Regular",
-                            "font_size": 16,
-                            "letter_spacing": 0,
-                            "line_height": "auto",
-                            "align_h": "left",
-                            "align_v": "center",
-                            "color": "#1A1A1AFF"
-                          }
-                        },
-                        {
-                          "id": "1:26",
-                          "name": "通知开关",
-                          "visible": true,
-                          "opacity": 1,
-                          "blend_mode": "normal",
-                          "box": {
-                            "x": 263,
-                            "y": 12,
-                            "width": 48,
-                            "height": 24
-                          },
-                          "type": "instance",
-                          "instance": {
-                            "symbol_id": "8229:44686",
-                            "variant_key": "comp_switch_on_002",
-                            "component_set_key": "switch-base-key",
-                            "component_set_resolved": false,
-                            "path": "component/switches/"
-                          }
-                        }
-                      ]
-                    },
-                    {
-                      "id": "1:27",
-                      "name": "深色模式设置项",
-                      "visible": true,
-                      "opacity": 1,
-                      "blend_mode": "normal",
-                      "box": {
-                        "x": 12,
-                        "y": 60,
-                        "width": 311,
-                        "height": 48
-                      },
-                      "type": "frame",
-                      "auto_layout": {
-                        "direction": "horizontal",
-                        "gap": 0,
-                        "counter_gap": 0,
-                        "padding": [
-                          0,
-                          0,
-                          0,
-                          0
-                        ],
-                        "align_items": "center",
-                        "justify_content": "space_evenly",
-                        "wrap": false
-                      },
-                      "children": [
-                        {
-                          "id": "1:28",
-                          "name": "深色模式文字",
-                          "visible": true,
-                          "opacity": 1,
-                          "blend_mode": "normal",
-                          "box": {
-                            "x": 0,
-                            "y": 12,
-                            "width": 80,
-                            "height": 24
-                          },
-                          "type": "text",
-                          "text_content": "深色模式",
-                          "text_style": {
-                            "font_family": "PingFang SC",
-                            "font_style": "Regular",
-                            "font_size": 16,
-                            "letter_spacing": 0,
-                            "line_height": "auto",
-                            "align_h": "left",
-                            "align_v": "center",
-                            "color": "#1A1A1AFF"
-                          }
-                        },
-                        {
-                          "id": "1:29",
-                          "name": "深色模式开关",
-                          "visible": true,
-                          "opacity": 1,
-                          "blend_mode": "normal",
-                          "box": {
-                            "x": 231,
-                            "y": 12,
-                            "width": 48,
-                            "height": 24
-                          },
-                          "type": "instance",
-                          "instance": {
-                            "symbol_id": "8229:44687",
-                            "variant_key": "comp_switch_off_003",
-                            "component_set_key": "switch-base-key",
-                            "component_set_resolved": false,
-                            "path": "component/switches/"
-                          }
-                        }
-                      ]
-                    }
-                  ]
+                  "type": "instance",
+                  "instance": {
+                    "symbol_id": "8229:67890",
+                    "variant_key": "comp_002",
+                    "component_set_key": "button-primary-key",
+                    "component_set_resolved": false,
+                    "path": "component/buttons/"
+                  }
+                },
+                {
+                  "id": "1:15",
+                  "name": "状态切换按钮",
+                  "visible": true,
+                  "opacity": 1,
+                  "blend_mode": "normal",
+                  "box": {
+                    "x": 24,
+                    "y": 284,
+                    "width": 140,
+                    "height": 36
+                  },
+                  "type": "instance",
+                  "instance": {
+                    "symbol_id": "8229:FAKE",
+                    "variant_key": "FAKE_COMP_FABRICATED",
+                    "component_set_key": "fake-toggle-key",
+                    "component_set_resolved": false,
+                    "path": "component/toggles/"
+                  }
                 }
               ]
             },
             {
-              "id": "1:30",
-              "name": "装饰插图卡片",
+              "id": "1:16",
+              "name": "空状态插画",
               "visible": true,
               "opacity": 1,
               "blend_mode": "normal",
               "box": {
                 "x": 20,
-                "y": 548,
+                "y": 520,
+                "width": 335,
+                "height": 200
+              },
+              "type": "rectangle",
+              "placeholder": {
+                "is_placeholder": true,
+                "replacement_type": "svg",
+                "note": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 200 160\"><rect x=\"40\" y=\"20\" width=\"120\" height=\"100\" rx=\"8\" fill=\"#F0F0F0\" stroke=\"#E0E0E0\"/><text x=\"100\" y=\"70\" text-anchor=\"middle\" fill=\"#999\" font-size=\"14\">暂无数据</text></svg>"
+              },
+              "fills": [
+                {
+                  "type": "solid",
+                  "visible": true,
+                  "opacity": 1,
+                  "color": "#FFFFFFFF"
+                }
+              ],
+              "corner_radius": 12
+            },
+            {
+              "id": "1:17",
+              "name": "错误提示插画",
+              "visible": true,
+              "opacity": 1,
+              "blend_mode": "normal",
+              "box": {
+                "x": 20,
+                "y": 740,
+                "width": 335,
+                "height": 180
+              },
+              "type": "rectangle",
+              "placeholder": {
+                "is_placeholder": true,
+                "replacement_type": "image",
+                "note": "iVBORw0KGgoAAAANSUhEUgAAAMgAAADICAYAAACtwk6UAAABhmlUWHRYTUw6Y29tLmFkb2JlLnhtcAAAAAAAPD94cGFja2V0IGJlZ2luPSLvu78iIGlkPSdXNU9PRzFIVFJYN0ZJTEtMJz8+"
+              },
+              "fills": [
+                {
+                  "type": "solid",
+                  "visible": true,
+                  "opacity": 1,
+                  "color": "#1A1A1AFF"
+                }
+              ],
+              "corner_radius": 12
+            },
+            {
+              "id": "1:18",
+              "name": "加载中插画",
+              "visible": true,
+              "opacity": 1,
+              "blend_mode": "normal",
+              "box": {
+                "x": 20,
+                "y": 940,
+                "width": 335,
+                "height": 140
+              },
+              "type": "rectangle",
+              "placeholder": {
+                "is_placeholder": true,
+                "replacement_type": "svg",
+                "note": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 200 140\"><circle cx=\"100\" cy=\"70\" r=\"30\" fill=\"none\" stroke=\"#3478F6\" stroke-width=\"2\" stroke-dasharray=\"60 30\"/></svg>"
+              },
+              "fills": [
+                {
+                  "type": "solid",
+                  "visible": true,
+                  "opacity": 1,
+                  "color": "#FFFFFFFF"
+                }
+              ],
+              "corner_radius": 12
+            },
+            {
+              "id": "1:19",
+              "name": "成功提示插画",
+              "visible": true,
+              "opacity": 1,
+              "blend_mode": "normal",
+              "box": {
+                "x": 20,
+                "y": 1100,
                 "width": 335,
                 "height": 160
               },
-              "type": "frame",
-              "corner_radius": 12,
-              "children": [
+              "type": "rectangle",
+              "placeholder": {
+                "is_placeholder": true,
+                "replacement_type": "image",
+                "note": "iVBORw0KGgoAAAANSUhEUgAAAMgAAADICAYAAACtwk6UAAABSmlUWHRYTUw6Y29tLmFkb2JlLnhtcAAAAAAAPD94cGFja2V0IGJlZ2luPSLvu78iIGlkPSdXNU9PRzFIVFJYN0ZJTEtMJz8+"
+              },
+              "fills": [
                 {
-                  "id": "1:31",
-                  "name": "设置页装饰插画",
+                  "type": "solid",
                   "visible": true,
                   "opacity": 1,
-                  "blend_mode": "normal",
-                  "box": {
-                    "x": 0,
-                    "y": 0,
-                    "width": 335,
-                    "height": 160
-                  },
-                  "type": "frame"
+                  "color": "#FFFFFFFF"
                 }
-              ]
+              ],
+              "corner_radius": 12
             },
             {
-              "id": "1:32",
-              "name": "版本号文字",
+              "id": "1:20",
+              "name": "臆造插画",
               "visible": true,
               "opacity": 1,
               "blend_mode": "normal",
               "box": {
                 "x": 20,
-                "y": 720,
+                "y": 1280,
                 "width": 335,
-                "height": 24
+                "height": 120
+              },
+              "type": "rectangle",
+              "placeholder": {
+                "is_placeholder": true,
+                "replacement_type": "svg",
+                "note": "<svg>FAKE</svg>"
+              }
+            },
+            {
+              "id": "1:21",
+              "name": "头像图标",
+              "visible": true,
+              "opacity": 1,
+              "blend_mode": "normal",
+              "box": {
+                "x": 36,
+                "y": 420,
+                "width": 16,
+                "height": 16
+              },
+              "type": "rectangle",
+              "placeholder": {
+                "is_placeholder": true,
+                "replacement_type": "image",
+                "note": "iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAABJElEQVR4nI2T"
+              }
+            },
+            {
+              "id": "1:22",
+              "name": "臆造图标",
+              "visible": true,
+              "opacity": 1,
+              "blend_mode": "normal",
+              "box": {
+                "x": 335,
+                "y": 420,
+                "width": 16,
+                "height": 16
+              },
+              "type": "rectangle",
+              "placeholder": {
+                "is_placeholder": true,
+                "replacement_type": "svg",
+                "note": "<svg>FAKE</svg>"
+              }
+            },
+            {
+              "id": "1:23",
+              "name": "登录提示文字",
+              "visible": true,
+              "opacity": 1,
+              "blend_mode": "normal",
+              "box": {
+                "x": 44,
+                "y": 460,
+                "width": 295,
+                "height": 20
               },
               "type": "text",
-              "text_content": "v2.0.1",
+              "text_content": "请输入账号密码登录",
               "text_style": {
                 "font_family": "PingFang SC",
                 "font_style": "Regular",
@@ -841,18 +612,18 @@
                 "line_height": "auto",
                 "align_h": "center",
                 "align_v": "center",
-                "color": "#969696FF"
+                "color": "#999999FF"
               }
             },
             {
-              "id": "1:33",
+              "id": "1:24",
               "name": "底部标签栏",
               "visible": true,
               "opacity": 1,
               "blend_mode": "normal",
               "box": {
                 "x": 0,
-                "y": 746,
+                "y": 748,
                 "width": 375,
                 "height": 66
               },
@@ -889,199 +660,27 @@
                 "align_items": "center",
                 "justify_content": "space_evenly",
                 "wrap": false
+              }
+            },
+            {
+              "id": "1:25",
+              "name": "底部留白",
+              "visible": true,
+              "opacity": 1,
+              "blend_mode": "normal",
+              "box": {
+                "x": 0,
+                "y": 712,
+                "width": 375,
+                "height": 8
               },
-              "children": [
+              "type": "rectangle",
+              "fills": [
                 {
-                  "id": "1:34",
-                  "name": "首页标签",
+                  "type": "solid",
                   "visible": true,
                   "opacity": 1,
-                  "blend_mode": "normal",
-                  "box": {
-                    "x": 0,
-                    "y": 6,
-                    "width": 75,
-                    "height": 58
-                  },
-                  "type": "frame",
-                  "children": [
-                    {
-                      "id": "1:35",
-                      "name": "首页图标",
-                      "visible": true,
-                      "opacity": 1,
-                      "blend_mode": "normal",
-                      "box": {
-                        "x": 25,
-                        "y": 0,
-                        "width": 24,
-                        "height": 24
-                      },
-                      "type": "rectangle",
-                      "placeholder": {
-                        "is_placeholder": true,
-                        "replacement_type": "svg",
-                        "note": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path d=\"M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z\" fill=\"currentColor\"/></svg>"
-                      }
-                    },
-                    {
-                      "id": "1:36",
-                      "name": "首页标签文字",
-                      "visible": true,
-                      "opacity": 1,
-                      "blend_mode": "normal",
-                      "box": {
-                        "x": 18,
-                        "y": 28,
-                        "width": 40,
-                        "height": 12
-                      },
-                      "type": "text",
-                      "text_content": "首页",
-                      "text_style": {
-                        "font_family": "PingFang SC",
-                        "font_style": "Regular",
-                        "font_size": 10,
-                        "letter_spacing": 0,
-                        "line_height": "auto",
-                        "align_h": "center",
-                        "align_v": "center",
-                        "color": "#3478F6FF"
-                      }
-                    }
-                  ]
-                },
-                {
-                  "id": "1:37",
-                  "name": "发现标签",
-                  "visible": true,
-                  "opacity": 1,
-                  "blend_mode": "normal",
-                  "box": {
-                    "x": 75,
-                    "y": 6,
-                    "width": 75,
-                    "height": 58
-                  },
-                  "type": "frame",
-                  "children": [
-                    {
-                      "id": "1:38",
-                      "name": "发现图标（LLM臆想）",
-                      "visible": true,
-                      "opacity": 1,
-                      "blend_mode": "normal",
-                      "box": {
-                        "x": 25,
-                        "y": 0,
-                        "width": 24,
-                        "height": 24
-                      },
-                      "type": "rectangle",
-                      "placeholder": {
-                        "is_placeholder": true,
-                        "replacement_type": "svg",
-                        "note": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><circle cx=\"12\" cy=\"12\" r=\"10\" fill=\"none\" stroke=\"currentColor\"/><path d=\"M12 8v4l3 3\" stroke=\"currentColor\"/></svg>"
-                      }
-                    },
-                    {
-                      "id": "1:39",
-                      "name": "发现标签文字",
-                      "visible": true,
-                      "opacity": 1,
-                      "blend_mode": "normal",
-                      "box": {
-                        "x": 18,
-                        "y": 28,
-                        "width": 40,
-                        "height": 12
-                      },
-                      "type": "text",
-                      "text_content": "发现",
-                      "text_style": {
-                        "font_family": "PingFang SC",
-                        "font_style": "Regular",
-                        "font_size": 10,
-                        "letter_spacing": 0,
-                        "line_height": "auto",
-                        "align_h": "center",
-                        "align_v": "center",
-                        "color": "#999999FF"
-                      }
-                    }
-                  ]
-                },
-                {
-                  "id": "1:40",
-                  "name": "消息标签",
-                  "visible": true,
-                  "opacity": 1,
-                  "blend_mode": "normal",
-                  "box": {
-                    "x": 150,
-                    "y": 4,
-                    "width": 75,
-                    "height": 58
-                  },
-                  "type": "frame",
-                  "children": [
-                    {
-                      "id": "1:41",
-                      "name": "消息图标背景图",
-                      "visible": true,
-                      "opacity": 1,
-                      "blend_mode": "normal",
-                      "box": {
-                        "x": 18,
-                        "y": 6,
-                        "width": 40,
-                        "height": 40
-                      },
-                      "type": "rectangle",
-                      "placeholder": {
-                        "is_placeholder": true,
-                        "replacement_type": "image",
-                        "note": ""
-                      }
-                    }
-                  ]
-                },
-                {
-                  "id": "1:42",
-                  "name": "我的标签",
-                  "visible": true,
-                  "opacity": 1,
-                  "blend_mode": "normal",
-                  "box": {
-                    "x": 300,
-                    "y": 6,
-                    "width": 75,
-                    "height": 58
-                  },
-                  "type": "frame",
-                  "children": [
-                    {
-                      "id": "1:43",
-                      "name": "我的图标组件（臆想）",
-                      "visible": true,
-                      "opacity": 1,
-                      "blend_mode": "normal",
-                      "box": {
-                        "x": 19,
-                        "y": 4,
-                        "width": 36,
-                        "height": 36
-                      },
-                      "type": "instance",
-                      "instance": {
-                        "symbol_id": "9999:99999",
-                        "variant_key": "FAKE_COMP_FABRICATED",
-                        "component_set_key": "fake-profile-icon-key",
-                        "component_set_resolved": false,
-                        "path": "component/profile-icons/"
-                      }
-                    }
-                  ]
+                  "color": "#F5F5F5FF"
                 }
               ]
             }

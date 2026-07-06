@@ -120,8 +120,7 @@ export default defineComponent({
                   modelValue={layerDescription.value}
                   size="small"
                   type="textarea"
-                  rows={2}
-                  resize="none"
+                  autosize={{ minRows: 2, maxRows: 4 }}
                   onInput={(val: string) => { layerDescription.value = val; saveText() }}
                 />
               </div>

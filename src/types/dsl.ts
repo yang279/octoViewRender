@@ -51,11 +51,14 @@ export interface IconResourceDetail {
 
 export interface IllusResourceDetail {
   illus_id: string
-  illus_category: string
-  illus_tags: string[]
-  illus_version: string
-  file_path: string
-  name: string
+  alias: string
+  description: string
+  category: string
+  tags: string[]
+  theme: string
+  version: string
+  illus_file_type: 'svg' | 'png'
+  illus_content: string
 }
 
 export interface ImageResourceDetail {

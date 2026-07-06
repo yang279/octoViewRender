@@ -37,11 +37,11 @@ Node | Node[]
 | `naturalWidth` | number | 否 | img 原始宽度（px）|
 | `naturalHeight` | number | 否 | img 原始高度（px）|
 | `loaded` | boolean | 否 | img 是否加载成功 |
-| `resourceType` | string | layerType 为 component/icon/illus/image 时必选 | 资源类型语义标记：`component` / `icon` / `illus` / `image`。component/illus/image 对应向量搜索 API 的 `type` 参数；icon 走独立 iconPlus API |
-| `resourceId` | string | 同上必选 | 向量搜索 API 返回的 `data_id`，唯一标识一个设计资源 |
-| `resourceVectorText` | string | 同上必选 | `/search/llm` 返回的 `vector_text`，包含资源核心信息（名称、类别、属性等） |
+| `resourceType` | string | layerType 为 component/icon/illus/image 时必选 | 资源类型语义标记：`component` / `icon` / `illus` / `image`。component/image 对应向量搜索 API 的 `type` 参数；icon 走独立 iconPlus API；illus 走独立 illusPlus API |
+| `resourceId` | string | 同上必选 | 资源 API 返回的唯一标识：component/image 来自向量搜索的 `data_id`；icon 来自 getIconInfo 的 `icon_id`；illus 来自 getIllusInfo 的 `illus_id` |
+| `resourceVectorText` | string | 同上必选 | 资源核心信息文本：component/image 来自 `/search/llm` 的 `vector_text`；icon 来自 getIconInfo；illus 来自 getIllusInfo |
 | `resourceScore` | number | 同上可选 | `/search/llm` 返回的 `score`，表示匹配置信度（0-1），值越高越匹配 |
-| `resourceDetail` | ResourceDetail | 同上必选 | 完整资源数据，结构按 `resourceType` 不同而不同。component/illus/image 来自向量搜索 `/detail` API；icon 来自 iconPlus API（getIconInfo + getSvg 合并），见 [ResourceDetail](#resourcedetail) |
+| `resourceDetail` | ResourceDetail | 同上必选 | 完整资源数据，结构按 `resourceType` 不同而不同。component/image 来自向量搜索 `/detail` API；icon 来自 iconPlus API（getIconInfo + getSvg 合并）；illus 来自 illusPlus API（getIllusInfo + getIllus 合并），见 [ResourceDetail](#resourcedetail) |
 | `children` | Node[] | 否 | 子节点列表（有子节点时输出）|
 
 ---
@@ -158,7 +158,7 @@ Node | Node[]
 
 > ⛔ `text` / `icon` / `component` / `rectangle` 节点**不得有 `children` 字段**，其内部结构由组件系统管理，不在 node-dsl 中展开。
 
-> 🔗 `component` / `icon` / `illus` / `image` 节点**必须包含资源绑定字段**（`resourceType` / `resourceId` / `resourceVectorText` / `resourceDetail`），用于关联真实设计资源。component/illus/image 通过向量搜索 API 匹配；icon 通过 iconPlus 三步 API 匹配。`frame` / `text` / `rectangle` 节点不得有资源绑定字段。
+> 🔗 `component` / `icon` / `illus` / `image` 节点**必须包含资源绑定字段**（`resourceType` / `resourceId` / `resourceVectorText` / `resourceDetail`），用于关联真实设计资源。component/image 通过向量搜索 API 匹配（其中 resourceType=illus 走 illusPlus 三步 API）；icon 通过 iconPlus 三步 API 匹配。`frame` / `text` / `rectangle` 节点不得有资源绑定字段。
 
 ---
 
@@ -196,16 +196,19 @@ Node | Node[]
 | `icon_file_type` | 文件类型 "svg" 或 "png"（来自 getSvg 请求的 fileType） |
 | `icon_content` | 图标内容：SVG 标签字符串（fileType=svg）或 base64 数据（fileType=png），来自 getSvg 返回 |
 
-### illus（type=illus）
+### illus（type=illus，字段来自 illusPlus API 的 getIllusInfo + getIllus 合并）
 
 | 字段 | 说明 |
 |---|---|
-| `illus_id` | 插画原始 ID |
-| `illus_category` | 分类 |
-| `illus_tags` | 标签列表 |
-| `illus_version` | 版本号 |
-| `file_path` | 文件路径 |
-| `name` | 资源名称 |
+| `illus_id` | 插画原始 ID（来自 getIllusInfo） |
+| `alias` | 插画别名（来自 getIllusInfo） |
+| `description` | 描述（来自 getIllusInfo） |
+| `category` | 分类（来自 getIllusInfo） |
+| `tags` | 标签列表（来自 getIllusInfo） |
+| `theme` | 主题：浅色/深色（来自 getIllusInfo） |
+| `version` | 版本号（来自 getIllusInfo） |
+| `illus_file_type` | 文件类型 "svg" 或 "png"（来自 getIllus 请求的 fileType） |
+| `illus_content` | 插画内容：SVG 标签字符串（fileType=svg）或 base64 数据（fileType=png），来自 getIllus 返回 |
 
 ### image（type=image）
 
@@ -330,6 +333,31 @@ Node | Node[]
           "style": {
             "borderRadius": "50%",
             "imageData": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAFAAAABQCAYAAACOEfKtAAAA..."
+          }
+        },
+
+        {
+          "nid": 23,
+          "tag": "div",
+          "rect": { "x": 20, "y": 180, "w": 335, "h": 120 },
+          "layerType": "image",
+          "layerName": "空状态插画",
+          "layerDescription": "数据为空时的提示插画，浅色主题",
+          "style": { "display": "flex", "justifyContent": "center", "alignItems": "center" },
+          "resourceType": "illus",
+          "resourceId": "EMPLY_ILL",
+          "resourceVectorText": "空状态 空数据提示插画",
+          "resourceScore": 0.93,
+          "resourceDetail": {
+            "illus_id": "EMPLY_ILL",
+            "alias": "空状态插画",
+            "description": "数据为空时的提示插画",
+            "category": "基础插画",
+            "tags": "办公",
+            "theme": "浅色",
+            "version": "1.0.0",
+            "illus_file_type": "svg",
+            "illus_content": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 200 160\">...</svg>"
           }
         },
 

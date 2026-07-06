@@ -224,6 +224,12 @@ function buildPlaceholderMeta(style: Record<string, string>, node: NodeDslNode):
       if (d.icon_content) note = d.icon_content
       break
     }
+    case 'illus': {
+      const d = detail as IllusResourceDetail
+      replacementType = d.illus_file_type === 'png' ? 'image' : 'svg'
+      if (d.illus_content) note = d.illus_content
+      break
+    }
   }
 
   return {
@@ -326,7 +332,8 @@ function convertNode(node: NodeDslNode, parentRect: NodeDslRect): DesignDslLayer
   }
 
   if (node.layerType === 'rectangle') {
-    return { ...base, type: 'rectangle', ...buildVisualProps(style) } as DesignDslLayer
+    const ph = node.resourceType === 'illus' ? buildPlaceholderMeta(style, node) : null
+    return { ...base, type: 'rectangle', ...buildVisualProps(style), ...(ph ? { placeholder: ph } : {}) } as DesignDslLayer
   }
 
   if (node.layerType === 'image') {
