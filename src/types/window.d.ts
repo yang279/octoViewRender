@@ -9,6 +9,7 @@ declare global {
     renderDslToPipeline: (json: unknown) => Promise<void>
     clearDsl: () => void
     confirmDsl: () => void
+    loadDsl: (data: unknown, name?: string) => void
   }
 }
 

@@ -235,6 +235,10 @@ export function useWindowBridge() {
     dslStore.isConfirmed = false
   }
 
+  function loadDsl(data: unknown, name?: string) {
+    applyDslData(data, name || '')
+  }
+
   async function handlePipelineZipData(buffer: ArrayBuffer) {
     try {
       const zipData = buffer.slice(0)
@@ -289,6 +293,7 @@ export function useWindowBridge() {
     window.renderDslToPipeline = renderDslToPipeline
     window.clearDsl            = clearDsl
     window.confirmDsl          = () => dslStore.confirmDsl()
+    window.loadDsl             = loadDsl
     window.addEventListener('message', onMessage)
   })
 
@@ -301,6 +306,7 @@ export function useWindowBridge() {
     delete w.renderDslToPipeline
     delete w.clearDsl
     delete w.confirmDsl
+    delete w.loadDsl
     window.removeEventListener('message', onMessage)
   })
 }

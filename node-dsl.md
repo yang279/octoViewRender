@@ -37,7 +37,7 @@ Node | Node[]
 | `naturalWidth` | number | 否 | img 原始宽度（px）|
 | `naturalHeight` | number | 否 | img 原始高度（px）|
 | `loaded` | boolean | 否 | img 是否加载成功 |
-| `resourceType` | string | layerType 为 component/icon/illus/image 时必选 | 资源类型语义标记：`component` / `icon` / `illus` / `image`。component/image 对应向量搜索 API 的 `type` 参数；icon 走独立 iconPlus API；illus 走独立 illusPlus API |
+| `resourceType` | string | layerType 为 component/icon/image 时必选 | 资源类型语义标记：`component` / `icon` / `image` / `illus`。其中 resourceType=illus 对应 layerType=image。component/image 对应向量搜索 API 的 `type` 参数；icon 走独立 iconPlus API；illus 走独立 illusPlus API |
 | `resourceId` | string | 同上必选 | 资源 API 返回的唯一标识：component/image 来自向量搜索的 `data_id`；icon 来自 getIconInfo 的 `icon_id`；illus 来自 getIllusInfo 的 `illus_id` |
 | `resourceVectorText` | string | 同上必选 | 资源核心信息文本：component/image 来自 `/search/llm` 的 `vector_text`；icon 来自 getIconInfo；illus 来自 getIllusInfo |
 | `resourceScore` | number | 同上可选 | `/search/llm` 返回的 `score`，表示匹配置信度（0-1），值越高越匹配 |
@@ -158,7 +158,7 @@ Node | Node[]
 
 > ⛔ `text` / `icon` / `component` / `rectangle` 节点**不得有 `children` 字段**，其内部结构由组件系统管理，不在 node-dsl 中展开。
 
-> 🔗 `component` / `icon` / `illus` / `image` 节点**必须包含资源绑定字段**（`resourceType` / `resourceId` / `resourceVectorText` / `resourceDetail`），用于关联真实设计资源。component/image 通过向量搜索 API 匹配（其中 resourceType=illus 走 illusPlus 三步 API）；icon 通过 iconPlus 三步 API 匹配。`frame` / `text` / `rectangle` 节点不得有资源绑定字段。
+> 🔗 `component` / `icon` / `image` 节点**必须包含资源绑定字段**（`resourceType` / `resourceId` / `resourceVectorText` / `resourceDetail`），用于关联真实设计资源。component/image 通过向量搜索 API 匹配（其中 resourceType=illus 走 illusPlus 三步 API，illus 节点的 layerType 为 image）；icon 通过 iconPlus 三步 API 匹配。`frame` / `text` / `rectangle` 节点不得有资源绑定字段。
 
 ---
 
