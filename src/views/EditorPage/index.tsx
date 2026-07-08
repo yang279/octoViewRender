@@ -1,4 +1,4 @@
-import { defineComponent, ref } from 'vue'
+import { defineComponent, ref, watch } from 'vue'
 import { useDslStore } from '@/stores/dsl'
 import type { DslNode } from '@/types/dsl'
 import type { ClickPayload } from '@/components/WireframeRenderer'
@@ -12,6 +12,11 @@ export default defineComponent({
 
     const selectedNode = ref<DslNode | null>(null)
     const popoverPos   = ref<{ x: number; y: number } | null>(null)
+
+    watch(() => store.root, () => {
+      selectedNode.value = null
+      popoverPos.value   = null
+    })
 
     function onNodeClick(payload: ClickPayload | null) {
       if (!payload) {

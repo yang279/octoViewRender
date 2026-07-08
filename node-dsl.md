@@ -42,6 +42,7 @@ Node | Node[]
 | `resourceVectorText` | string | 同上必选 | 资源核心信息文本：component/image 来自 `/search/llm` 的 `vector_text`；icon 来自 getIconInfo；illus 来自 getIllusInfo |
 | `resourceScore` | number | 同上可选 | `/search/llm` 返回的 `score`，表示匹配置信度（0-1），值越高越匹配 |
 | `resourceDetail` | ResourceDetail | 同上必选 | 完整资源数据，结构按 `resourceType` 不同而不同。component/image 来自向量搜索 `/detail` API；icon 来自 iconPlus API（getIconInfo + getSvg 合并）；illus 来自 illusPlus API（getIllusInfo + getIllus 合并），见 [ResourceDetail](#resourcedetail) |
+| `resourceVariant` | object | 可选 | 变体标识（同一 `resourceId` 在页面中用了多种变体时出现）：icon 为 `{size, style, color}`，illus 为 `{theme}`，值与获取素材时的 API 参数一致。宿主用它匹配对应变体的素材文件做回填；**转化方法可忽略此字段**（内容已内联在 `*_content`） |
 | `children` | Node[] | 否 | 子节点列表（有子节点时输出）|
 
 ---
@@ -164,6 +165,8 @@ Node | Node[]
 
 ## ResourceDetail
 
+> ⚙️ **数据来源（2026-07 起）**：`resourceDetail` 不再由 LLM 输出，而是宿主（dslToHex 页面）根据 API 调用的真实输出**程序化回填**。其中 icon/illus 的 SVG 素材由 api-call.ts `--save` 落盘为项目内文件（`.octo/dslToHex/<sessionId>/assets/`），宿主在向 iframe postMessage（`NODE_DSL_JSON` / `NODE_DSL_PIPELINE`）前读取文件并内联为 `icon_content` / `illus_content`。对转化方法而言消费方式不变：直接读 `*_content` 字段；新增的 `file` 字段仅为素材溯源。
+
 `resourceDetail` 的结构按 `resourceType` 不同而不同：
 
 ### component（type=component）
@@ -194,7 +197,8 @@ Node | Node[]
 | `category` | 分类（来自 getIconInfo） |
 | `group` | 分组（来自 getIconInfo） |
 | `icon_file_type` | 文件类型 "svg" 或 "png"（来自 getSvg 请求的 fileType） |
-| `icon_content` | 图标内容：SVG 标签字符串（fileType=svg）或 base64 数据（fileType=png），来自 getSvg 返回 |
+| `icon_content` | 图标内容：SVG 标签字符串（fileType=svg）或 base64 数据（fileType=png）。**宿主在 postMessage 发送前从素材文件读取并内联**，转化方法直接使用该字段即可 |
+| `file` | （可选）素材文件的项目相对路径（如 `.octo/dslToHex/<sessionId>/assets/icon-<id>-<size>-<style>-<color>.svg`，png 素材为 `.png` 后缀）。素材落盘的真源，由宿主读取后内联为 `icon_content`（svg 内联文本，png 内联 base64）；iframe 无法读本地文件，**不要依赖此字段取内容**，仅作溯源参考。极端情况下（宿主读文件失败）`icon_content` 可能缺失，转化方法需容错（渲染占位） |
 
 ### illus（type=illus，字段来自 illusPlus API 的 getIllusInfo + getIllus 合并）
 
@@ -208,7 +212,8 @@ Node | Node[]
 | `theme` | 主题：浅色/深色（来自 getIllusInfo） |
 | `version` | 版本号（来自 getIllusInfo） |
 | `illus_file_type` | 文件类型 "svg" 或 "png"（来自 getIllus 请求的 fileType） |
-| `illus_content` | 插画内容：SVG 标签字符串（fileType=svg）或 base64 数据（fileType=png），来自 getIllus 返回 |
+| `illus_content` | 插画内容：SVG 标签字符串（fileType=svg）或 base64 数据（fileType=png）。**宿主在 postMessage 发送前从素材文件读取并内联**，转化方法直接使用该字段即可 |
+| `file` | （可选）素材文件的项目相对路径（如 `.octo/dslToHex/<sessionId>/assets/illus-<id>-<theme>.svg`，png 素材为 `.png` 后缀）。素材落盘的真源，由宿主读取后内联为 `illus_content`（svg 内联文本，png 内联 base64）；iframe 无法读本地文件，**不要依赖此字段取内容**，仅作溯源参考。极端情况下（宿主读文件失败）`illus_content` 可能缺失，转化方法需容错（渲染占位） |
 
 ### image（type=image）
 

@@ -46,7 +46,8 @@ export interface IconResourceDetail {
   category: string
   group: string
   icon_file_type: 'svg' | 'png'
-  icon_content: string
+  icon_content?: string
+  file?: string
 }
 
 export interface IllusResourceDetail {
@@ -58,7 +59,8 @@ export interface IllusResourceDetail {
   theme: string
   version: string
   illus_file_type: 'svg' | 'png'
-  illus_content: string
+  illus_content?: string
+  file?: string
 }
 
 export interface ImageResourceDetail {
