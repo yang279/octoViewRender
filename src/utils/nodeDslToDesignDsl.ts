@@ -78,6 +78,31 @@ function nidToId(nid: number): string {
   return `1:${nid}`
 }
 
+// 将 cv_variant_name（如 "size=normal, disabled=false"）解析为 { size: "normal", disabled: "false" }
+function parseVariantProps(variantName: string | undefined | null): Record<string, string> {
+  const props: Record<string, string> = {}
+  if (!variantName) return props
+  for (const pair of variantName.split(',')) {
+    const p = pair.trim()
+    const eq = p.indexOf('=')
+    if (eq > 0) props[p.slice(0, eq).trim()] = p.slice(eq + 1).trim()
+  }
+  return props
+}
+
+// 组件显示文字只能经 variant_props 承载，且只有 type==="TEXT" 的属性可写。
+// 当组件节点有实际文字（node.text）时，把它写进所有 TEXT 属性；无 TEXT 属性或无文字则不动。
+function buildVariantProps(detail: ComponentResourceDetail, node: NodeDslNode): Record<string, string> {
+  const props = parseVariantProps(detail.cv_variant_name)
+  const text = node.text?.trim()
+  if (text) {
+    for (const prop of detail.cv_component_props || []) {
+      if (prop?.type === 'TEXT' && prop.name) props[prop.name] = text
+    }
+  }
+  return props
+}
+
 function parseGradientStops(str: string): { position: number; color: string }[] {
   const stops: { position: number; color: string }[] = []
   const re = /(#[0-9a-fA-F]{6,8}|rgba?\([^)]+\))\s+([\d.]+)%/g
@@ -302,6 +327,7 @@ function convertNode(node: NodeDslNode, parentRect: NodeDslRect): DesignDslLayer
 
   if (node.layerType === 'component' && node.resourceDetail && node.resourceType === 'component') {
     const detail = node.resourceDetail as ComponentResourceDetail
+    const variantProps = buildVariantProps(detail, node)
     return {
       ...base,
       type: 'instance',
@@ -310,7 +336,8 @@ function convertNode(node: NodeDslNode, parentRect: NodeDslRect): DesignDslLayer
         variant_key:            detail.cv_variant_key,
         component_set_key:      detail.cv_component_key || detail.cv_variant_key,
         component_set_resolved: false,
-        path:                   detail.file_path || '',
+        path:                   [detail.cv_domain, detail.file_path].filter(Boolean).join('/').replace(/\/{2,}/g, '/'),
+        ...(Object.keys(variantProps).length ? { variant_props: variantProps } : {}),
       } as DesignDslInstance,
     }
   }

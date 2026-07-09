@@ -176,6 +176,7 @@ Node | Node[]
 | `cv_component_name` | 组件集名称 |
 | `cv_canvas_name` | 组件类别 |
 | `cv_variant_name` | 变体属性 |
+| `cv_component_props` | 组件变体的属性定义列表，每项 `{ name, type }`。`type` 为 `TEXT` 的属性可承载文字：转化方法据此把节点 `text` 写入 `variant_props` 对应属性；无 TEXT 属性的组件（如纯图标）不写文字 |
 | `cv_component_key` | 组件 Key |
 | `cv_variant_key` | 变体 Key |
 | `cv_variant_guid` | 变体 GUID，格式 `"sessionID:localID"` |
@@ -440,6 +441,10 @@ Node | Node[]
             "cv_component_name": "按钮",
             "cv_canvas_name": "1.基础类",
             "cv_variant_name": "size=normal, type=primary, disabled=false",
+            "cv_component_props": [
+              { "name": "text", "type": "TEXT" },
+              { "name": "disabled", "type": "BOOLEAN" }
+            ],
             "cv_component_key": "button-primary-key",
             "cv_variant_key": "xyz789ghi012",
             "cv_variant_guid": "8229:67890",
@@ -477,3 +482,33 @@ Node | Node[]
   ]
 }
 ```
+
+---
+
+## 附：dslToHex 生成流程与资源字段契约
+
+> 本节说明 dslToHex 页面「按语义描述生成 DSL」这条流水线的行为，供消费端（iframe 转化方法 / 集成方）理解数据来源与边界。DSL 的**最终形态**与本文档其余部分一致；差异仅在资源字段的**填充方式**。
+
+### 两个阶段
+
+- **step-a（语义布局）**：LLM 把用户描述转成自然语言的语义布局文本（包裹在 `<semantic-layout>` 标签内）。
+- **step-b（DSL 生成）**：LLM 把语义布局转成本文档定义的 Node DSL JSON，并调用资源 API 为 component/icon/image 节点匹配真实设计资源。
+
+### step-a 的三种提问路径（集成方需知）
+
+用户描述往往不完整，step-a 按信息重要程度分三种处理：
+
+1. **一般性缺失**（配色、间距、次要文案）→ 按设计规范自行补全，直接产出布局。
+2. **关键信息缺失到无法规划**（如完全不知道要做什么页面）→ 调用 `question` 工具阻塞式提问。**这一轮不产出任何布局/DSL**，只有一个 question 工具调用等待用户回答。集成方需容忍「某些助手轮次没有 `<semantic-layout>` 输出」。
+3. **布局已给出、想征求确认** → 布局正常输出后，用 `<follow-up>` 标签附软性建议（标签内内容不属于布局正文）。
+
+### step-b 的资源字段填充（转化方法需知）
+
+资源字段**不完全由 LLM 输出**，宿主会做程序化对账与回填：
+
+- LLM 只填 `resourceId` / `resourceVectorText` / `resourceScore`，多变体时另填 `resourceVariant`；**`resourceDetail` 由宿主回填，LLM 不输出**。
+- icon/illus 的 SVG/PNG 素材由脚本落盘为项目内文件（`.octo/dslToHex/<sessionId>/assets/`），`resourceDetail.file` 记其相对路径；宿主在 postMessage（`NODE_DSL_JSON` / `NODE_DSL_PIPELINE`）**发送前**读取文件并内联为 `icon_content` / `illus_content`（svg 内联文本、png 内联 base64）。
+- component/image 的 `resourceDetail` 来自 vectorDetail 的真实返回；若 LLM 未调用 vectorDetail，该节点可能**只有 `resourceType` 而无 detail**。
+- 宿主会剥离编造资源：`resourceId` 不在工具真实返回集合里的节点，其数据性字段被清空，只留 `resourceType`。
+
+**对转化方法的含义**：直接消费最终 DSL 的 `icon_content` / `illus_content` 等 `resourceDetail` 字段即可；`file`、`resourceVariant` 是宿主内部机制，可忽略。需容错：极端情况下（宿主读文件失败、或 LLM 漏调 API）资源节点可能缺 `*_content` 甚至整个 `resourceDetail`，此时应渲染占位而非报错。

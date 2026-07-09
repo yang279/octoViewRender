@@ -96,6 +96,7 @@ export interface DesignDslInstance {
   component_set_key: string
   component_set_resolved: boolean
   path: string
+  variant_props?: Record<string, string>
 }
 
 export interface DesignDslTextLayer {

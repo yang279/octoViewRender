@@ -23,10 +23,16 @@ export type LayerType =
 
 export type ResourceType = 'component' | 'icon' | 'illus' | 'image'
 
+export interface ComponentProp {
+  name: string
+  type: string
+}
+
 export interface ComponentResourceDetail {
   cv_component_name: string
   cv_canvas_name: string
   cv_variant_name: string
+  cv_component_props?: ComponentProp[]
   cv_component_key: string
   cv_variant_key: string
   cv_variant_guid: string
